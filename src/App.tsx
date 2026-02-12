@@ -2,61 +2,187 @@ import { useState } from 'react'
 import './App.css'
 
 function App() {
+  const [activeTab, setActiveTab] = useState<'login' | 'signup'>('login')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [emailError, setEmailError] = useState('')
+  const [passwordError, setPasswordError] = useState('')
+
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    return emailRegex.test(email)
+  }
+
+  const validatePassword = (password: string) => {
+    const hasLetter = /[a-zA-Z]/.test(password)
+    const hasNumber = /[0-9]/.test(password)
+    const hasPunctuation = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)
+    
+    if (!hasLetter || !hasNumber || !hasPunctuation) {
+      return 'Password must contain a letter, a number, a punctuation mark, and be at least 8 characters long'
+    }
+    if (password.length < 8) {
+      return 'Password must be at least 8 characters'
+    }
+    return ''
+  }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    console.log('Login:', { email, password })
-    // Add your login logic here
+    
+    // Clear previous errors
+    setEmailError('')
+    setPasswordError('')
+
+    // Validate email
+    if (!validateEmail(email)) {
+      setEmailError('Please enter a valid email address')
+      return
+    }
+
+    // Validate password
+    const passwordValidationError = validatePassword(password)
+    if (passwordValidationError) {
+      setPasswordError(passwordValidationError)
+      return
+    }
+
+    // Validate password match for signup
+    if (activeTab === 'signup' && password !== confirmPassword) {
+      setPasswordError('Passwords do not match')
+      return
+    }
+
+    console.log(`${activeTab}:`, { email, password })
+    // Add your actual login/signup logic here
+  }
+
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEmail(e.target.value)
+    if (emailError) setEmailError('')
+  }
+
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPassword(e.target.value)
+    if (passwordError) setPasswordError('')
+  }
+
+  const handleConfirmPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setConfirmPassword(e.target.value)
+    if (passwordError) setPasswordError('')
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-600 to-purple-800 flex items-center justify-center p-4">
-      <div className="bg-white/10 backdrop-blur-xl rounded-3xl shadow-2xl p-8 w-full max-w-md border border-white/20">
-        <h1 className="text-3xl font-bold text-white text-center mb-8 drop-shadow-lg">
-          Welcome back
-        </h1>
-        
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label className="block text-white/90 font-medium mb-2">
-              Email
-            </label>
+    <div className="app-container">
+      <div className="form-card">
+        <div className="header">
+          <h1>Welcome back</h1>
+          <p>Continue your learning journey</p>
+        </div>
+
+        <div className="tab-slider">
+          <button 
+            className={`tab-btn ${activeTab === 'login' ? 'tab-active' : ''}`}
+            onClick={() => setActiveTab('login')}
+          >
+            Login
+          </button>
+          <button 
+            className={`tab-btn ${activeTab === 'signup' ? 'tab-active' : ''}`}
+            onClick={() => setActiveTab('signup')}
+          >
+            Sign up
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="form" noValidate>
+          <div className="input-group">
+            <label>Email</label>
             <input
               type="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-xl text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all"
+              onChange={handleEmailChange}
               placeholder="you@example.com"
-              required
+              className={emailError ? 'input-error' : ''}
             />
+            {emailError && <span className="error-message">{emailError}</span>}
           </div>
           
-          <div>
-            <label className="block text-white/90 font-medium mb-2">
-              Password
-            </label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-xl text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all"
-              placeholder="••••••••"
-              required
-            />
+          <div className="input-group">
+            <label>Password</label>
+            <div className="password-wrapper">
+              <input
+                type={showPassword ? 'text' : 'password'}
+                value={password}
+                onChange={handlePasswordChange}
+                placeholder="••••••••"
+                className={passwordError ? 'input-error' : ''}
+              />
+              <button
+                type="button"
+                className="eye-btn"
+                onClick={() => setShowPassword(!showPassword)}
+                aria-label="Toggle password visibility"
+              >
+                {showPassword ? (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+                    <line x1="1" y1="1" x2="23" y2="23"/>
+                  </svg>
+                ) : (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                )}
+              </button>
+            </div>
+            {passwordError && <span className="error-message">{passwordError}</span>}
           </div>
+
+          {activeTab === 'signup' && (
+            <div className="input-group">
+              <label>Confirm Password</label>
+              <div className="password-wrapper">
+                <input
+                  type={showConfirmPassword ? 'text' : 'password'}
+                  value={confirmPassword}
+                  onChange={handleConfirmPasswordChange}
+                  placeholder="••••••••"
+                  className={passwordError ? 'input-error' : ''}
+                />
+                <button
+                  type="button"
+                  className="eye-btn"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  aria-label="Toggle confirm password visibility"
+                >
+                  {showConfirmPassword ? (
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+                      <line x1="1" y1="1" x2="23" y2="23"/>
+                    </svg>
+                  ) : (
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                      <circle cx="12" cy="12" r="3"/>
+                    </svg>
+                  )}
+                </button>
+              </div>
+            </div>
+          )}
           
-          <button
-            type="submit"
-            className="w-full bg-purple-500 hover:bg-purple-600 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5"
-          >
-            Sign in
+          <button type="submit">
+            {activeTab === 'login' ? 'Login' : 'Create account'}
           </button>
         </form>
-        
-        <p className="text-center text-white/70 mt-6 text-sm">
-          Forgot password? <a href="#" className="underline hover:text-white">Reset it</a>
+
+        <p className="forgot-password">
+          Forgot password? <a href="#">Reset it</a>
         </p>
       </div>
     </div>
