@@ -9,6 +9,7 @@ function App({ page }: AppProps) {
   if (page === 'home') {
     return <Home />
   }
+
   return <Login />
 }
 

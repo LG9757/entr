@@ -1,6 +1,8 @@
 import '../App.css'
+import { useNavigate } from 'react-router-dom'
 
 export default function Home() {
+    const navigate = useNavigate()
   return (
     <div className="dashboard-root">
       <header className="dashboard-header">
@@ -48,7 +50,12 @@ export default function Home() {
               </div>
 
               <div className="course-actions">
-                <button className="primary-button">Continue Course</button>
+                <button
+                    className="primary-button"
+                    onClick={() => navigate('/course')}
+                    >
+                    Continue Course
+                </button>
               </div>
             </div>
           </div>
