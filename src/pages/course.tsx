@@ -1,12 +1,20 @@
 import '../App.css'
+import { useNavigate } from 'react-router-dom'
 
 export default function Course() {
+    const navigate = useNavigate()
   return (
     <div className="course-page-root">
       {/* Top hero section */}
       <header className="course-hero">
         <div className="course-hero-top">
-          <button className="back-link">Back to Courses</button>
+            <button
+                className="back-link"
+                onClick={() => navigate('/home')}
+                >
+                Back to Courses
+            </button>
+
           <div className="course-hero-title">
             Recognising AI Content in Finance
           </div>

@@ -7,7 +7,13 @@ export default function Home() {
     <div className="dashboard-root">
       <header className="dashboard-header">
         <div className="dashboard-title">My Learning Dashboard</div>
-        <button className="logout-button">Logout</button>
+        <button
+            className="logout-button"
+            onClick={() => navigate('/')}
+            >
+            Logout
+        </button>
+
       </header>
 
       <main className="dashboard-main">
