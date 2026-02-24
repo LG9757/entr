@@ -65,7 +65,7 @@ export default function Course() {
         <h2 className="course-modules-title">Course Modules</h2>
 
         {/* Module 1 */}
-        <section className="module-card">
+        <section className="module-card" onClick={() => navigate('/course/module-1')}>
           <div className="module-icon playing">▶︎</div>
           <div className="module-content">
             <div className="module-header">
