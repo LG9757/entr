@@ -34,76 +34,140 @@ const lessons: Lesson[] = [
     ),
   },
   {
-    id: 2,
-    title: 'How AI Generates Financial Content',
-    duration: '12 min',
-    type: 'article',
-    status: 'completed',
-    content: (
-      <>
-        <div className="lesson-tags">
-          <span className="tag">article</span>
-          <span className="tag success">Completed</span>
-        </div>
+  id: 2,
+  title: 'How AI Generates Financial Content',
+  duration: '12 min',
+  type: 'article',
+  status: 'completed',
+  content: (
+    <>
+      <div className="lesson-tags">
+        <span className="tag">article</span>
+        <span className="tag success">Completed</span>
+      </div>
 
-        <h2 className="lesson-title">How AI Generates Financial Content</h2>
+      <h2 className="lesson-title">How AI Generates Financial Content</h2>
 
-        <section className="lesson-section">
-          <p>
-            Modern language models can generate earnings summaries, market commentary,
-            and analyst‑style insights from structured data such as price feeds or
-            financial statements.
-          </p>
-          <p>
-            They learn patterns from large corpora of historical reports and use
-            probabilistic predictions to generate new text that mimics this style.
-          </p>
-          <p>
-            In finance, this enables rapid scaling of commentary but also introduces
-            risks such as hallucinated figures, over‑confident tone, and subtle bias.
-          </p>
-        </section>
+      <section className="lesson-section">
+        <h3>From raw data to readable text</h3>
+        <p>
+          Modern language models can generate earnings summaries, market commentary,
+          and analyst‑style insights from structured data such as price feeds,
+          financial statements, and guidance transcripts.
+        </p>
+        <p>
+          They learn patterns from large corpora of historical reports and use
+          probabilistic predictions to generate new text that mimics this style,
+          sentence by sentence.
+        </p>
+        <p>
+          In finance, this enables rapid scaling of commentary across thousands of
+          tickers and events, far beyond what a human research team could cover
+          manually.
+        </p>
+      </section>
 
-        <section className="lesson-section">
-          <h3>Key signals of AI‑generated content</h3>
-          <ul>
-            <li>Overly generic language that could apply to many different companies.</li>
-            <li>Inconsistent numbers across paragraphs or versus source data.</li>
-            <li>Repetitive phrases and transitions reused throughout a document.</li>
-          </ul>
-        </section>
-      </>
-    ),
-  },
-  {
-    id: 3,
-    title: 'Common AI Patterns in Reports',
-    duration: '10 min',
-    type: 'article',
-    status: 'completed',
-    content: (
-      <>
-        <div className="lesson-tags">
-          <span className="tag">article</span>
-          <span className="tag success">Completed</span>
-        </div>
+      <section className="lesson-section">
+        <h3>Where the model gets its “voice”</h3>
+        <p>
+          The tone and structure of AI‑generated content are shaped by the training
+          data: if most examples are formal equity research notes, the output will
+          tend to sound like a cautious analyst.
+        </p>
+        <p>
+          Prompts and templates further steer this behaviour; for example, a bank
+          might enforce a standard outline that always covers revenue, margins,
+          cash flow, and risks in the same order.
+        </p>
+      </section>
 
-        <h2 className="lesson-title">Common AI Patterns in Reports</h2>
+      <section className="lesson-section">
+        <h3>Key signals of AI‑generated content</h3>
+        <ul>
+          <li>Overly generic language that could apply to many different companies.</li>
+          <li>Inconsistent numbers across paragraphs or versus source data.</li>
+          <li>Repetitive phrases and transitions reused throughout a document.</li>
+          <li>Very confident language attached to vague or weak evidence.</li>
+          <li>Perfectly formatted bullet points that all follow the same rhythm.</li>
+        </ul>
+      </section>
 
-        <section className="lesson-section">
-          <p>
-            When AI writes financial text, it often follows safe templates—for example,
-            opening with upbeat macro context and then repeating the same structure
-            for revenue, margins, and outlook.
-          </p>
-          <p>
-            Spotting these templates helps identify sections that were likely generated
-            and need closer verification.
-          </p>
-        </section>
-      </>
-    ),
-  },
+      <section className="lesson-section">
+        <h3>Why this matters for you</h3>
+        <p>
+          Being able to spot these patterns helps you decide when to trust a
+          report, when to double‑check the underlying numbers, and when to ask for
+          a human view.
+        </p>
+        <p>
+          In later modules, you will use these signals to design review workflows
+          that keep the speed benefits of AI while reducing the risk of subtle
+          errors creeping into investment decisions.
+        </p>
+      </section>
+    </>
+  ),
+},
+{
+  id: 3,
+  title: 'Common AI Patterns in Reports',
+  duration: '10 min',
+  type: 'article',
+  status: 'completed',
+  content: (
+    <>
+      <div className="lesson-tags">
+        <span className="tag">article</span>
+        <span className="tag success">Completed</span>
+      </div>
+
+      <h2 className="lesson-title">Common AI Patterns in Reports</h2>
+
+      <section className="lesson-section">
+        <h3>Template‑driven structure</h3>
+        <p>
+          When AI writes financial text, it often follows safe templates—for
+          example, opening with upbeat macro context and then repeating the same
+          structure for revenue, margins, and outlook.
+        </p>
+        <p>
+          This keeps reports consistent and easy to skim, but it can also hide the
+          fact that the model is filling in a pattern rather than reasoning about
+          the specific company.
+        </p>
+      </section>
+
+      <section className="lesson-section">
+        <h3>Language ticks to watch for</h3>
+        <ul>
+          <li>Repeated opener phrases like “The company demonstrated robust performance…”</li>
+          <li>
+            Balanced “pros and cons” paragraphs that look symmetrical even when
+            the underlying news is clearly good or clearly bad.
+          </li>
+          <li>
+            Frequent hedging phrases (“may indicate”, “could suggest”) without
+            concrete follow‑up analysis.
+          </li>
+        </ul>
+      </section>
+
+      <section className="lesson-section">
+        <h3>How to use these patterns</h3>
+        <p>
+          Spotting these templates helps identify sections that were likely
+          generated and need closer verification against the source data.
+        </p>
+        <p>
+          In practice, many teams keep AI for first drafts and use humans to
+          adjust the sections where these patterns are strongest—for example, the
+          risk discussion or any forward‑looking statements.
+        </p>
+      </section>
+    </>
+  ),
+},
+
   {
     id: 4,
     title: 'Quick Check: Real or AI Report?',
