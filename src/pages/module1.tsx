@@ -200,10 +200,9 @@ export default function Module1() {
     <ModulePage
       moduleTitle="Introduction to AI in Finance"
       moduleNumber={1}
-      totalLessons={lessons.length}
-      completedCount={3}
       lessons={lessons}
       backPath="/course"
     />
   )
 }
+

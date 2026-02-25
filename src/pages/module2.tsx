@@ -10,8 +10,6 @@ export default function Module2() {
     <ModulePage
       moduleTitle="Detecting AI-Generated Reports"
       moduleNumber={2}
-      totalLessons={lessons.length}
-      completedCount={0}
       lessons={lessons}
       backPath="/course"
     />
