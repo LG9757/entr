@@ -101,8 +101,11 @@ function Module1Assessment({
 
   const onSubmit = () => {
     setSubmitted(true)
-    window.scrollTo({ top: 0, behavior: 'smooth' })
+
+    const container = document.querySelector('.lesson-content') as HTMLElement | null
+    if (container) container.scrollTo({ top: 0, behavior: 'smooth' })
   }
+
 
   const reset = () => {
     setAnswers(Object.fromEntries(questions.map(q => [q.id, null])))
