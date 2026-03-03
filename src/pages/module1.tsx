@@ -1,4 +1,4 @@
-import React, { useId, useState } from 'react'
+import React, { useId, useState, useEffect } from 'react'
 import ModulePage, { type Lesson } from '../components/ModulePage'
 
 type MCQOption = { id: string; label: string }
@@ -78,9 +78,11 @@ type AssessQuestion = {
 function Module1Assessment({
   passPercent = 90,
   questions,
+  moduleNumber,
 }: {
   passPercent?: number
   questions: AssessQuestion[]
+  moduleNumber: number
 }) {
   const [answers, setAnswers] = useState<Record<string, string | null>>(() =>
     Object.fromEntries(questions.map(q => [q.id, null]))
@@ -88,30 +90,32 @@ function Module1Assessment({
   const [submitted, setSubmitted] = useState(false)
 
   const total = questions.length
-
-  const correctCount = questions.reduce((acc, q) => {
-    const a = answers[q.id]
-    return acc + (a === q.correctId ? 1 : 0)
-  }, 0)
-
+  const correctCount = questions.reduce((acc, q) => acc + (answers[q.id] === q.correctId ? 1 : 0), 0)
   const percent = Math.round((correctCount / total) * 100)
   const passed = percent >= passPercent
-
   const unansweredCount = questions.reduce((acc, q) => acc + (answers[q.id] ? 0 : 1), 0)
+
+  const passKey = `course:module:${moduleNumber}:passed`
 
   const onSubmit = () => {
     setSubmitted(true)
-
     const container = document.querySelector('.lesson-content') as HTMLElement | null
     if (container) container.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
-
   const reset = () => {
     setAnswers(Object.fromEntries(questions.map(q => [q.id, null])))
     setSubmitted(false)
-    window.scrollTo({ top: 0, behavior: 'smooth' })
+    window.localStorage.removeItem(passKey)
   }
+
+  useEffect(() => {
+    if (submitted && passed) {
+      window.localStorage.setItem(passKey, 'true')
+    }
+  }, [submitted, passed, passKey])
+
+
 
 return (
   <div className="assess">
@@ -756,6 +760,7 @@ const lessons: Lesson[] = [
     </section>
 
     <Module1Assessment
+      moduleNumber={1}
       passPercent={90}
       questions={[
         {

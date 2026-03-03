@@ -81,6 +81,22 @@ export default function ModulePage({ moduleTitle, moduleNumber, lessons, backPat
     if (!isLast) goTo(activeIndex + 1)
   }
 
+  const passedKey = `course:module:${moduleNumber}:passed`
+  const [modulePassed, setModulePassed] = useState(() => {
+    try {
+      return window.localStorage.getItem(passedKey) === 'true'
+    } catch {
+      return false
+    }
+  })
+  useEffect(() => {
+    try {
+      setModulePassed(window.localStorage.getItem(passedKey) === 'true')
+    } catch {}
+  }, [activeIndex, moduleNumber])
+
+
+
   return (
     <div className="lesson-page-root">
       <header className="lesson-header">
@@ -151,9 +167,26 @@ export default function ModulePage({ moduleTitle, moduleNumber, lessons, backPat
               Previous
             </button>
 
-            <button type="button" className="nav-btn nav-btn-primary" onClick={markCompletedAndNext}>
-              {isLast ? 'Mark Complete' : 'Next'}
-            </button>
+            {isLast ? (
+              modulePassed ? (
+                <button
+                  type="button"
+                  className="nav-btn nav-btn-primary"
+                  onClick={() => navigate('/course')}
+                >
+                  Finish module
+                </button>
+              ) : (
+                <button type="button" className="nav-btn nav-btn-primary" onClick={markCompletedAndNext}>
+                  Mark Complete
+                </button>
+              )
+            ) : (
+              <button type="button" className="nav-btn nav-btn-primary" onClick={markCompletedAndNext}>
+                Next
+              </button>
+            )}
+
           </div>
         </section>
       </main>
