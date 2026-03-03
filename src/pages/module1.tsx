@@ -67,6 +67,151 @@ function MCQ({
   )
 }
 
+type AssessQuestion = {
+  id: string
+  prompt: string
+  options: { id: string; label: string }[]
+  correctId: string
+  explanation: string
+}
+
+function Module1Assessment({
+  passPercent = 90,
+  questions,
+}: {
+  passPercent?: number
+  questions: AssessQuestion[]
+}) {
+  const [answers, setAnswers] = useState<Record<string, string | null>>(() =>
+    Object.fromEntries(questions.map(q => [q.id, null]))
+  )
+  const [submitted, setSubmitted] = useState(false)
+
+  const total = questions.length
+
+  const correctCount = questions.reduce((acc, q) => {
+    const a = answers[q.id]
+    return acc + (a === q.correctId ? 1 : 0)
+  }, 0)
+
+  const percent = Math.round((correctCount / total) * 100)
+  const passed = percent >= passPercent
+
+  const unansweredCount = questions.reduce((acc, q) => acc + (answers[q.id] ? 0 : 1), 0)
+
+  const onSubmit = () => {
+    setSubmitted(true)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  const reset = () => {
+    setAnswers(Object.fromEntries(questions.map(q => [q.id, null])))
+    setSubmitted(false)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+return (
+  <div className="assess">
+    <div className="assess-top">
+      <div>
+        <div className="assess-title">Final Assessment</div>
+        <div className="assess-subtitle">
+          {total} questions • Pass mark: {passPercent}% • Feedback appears after you submit
+        </div>
+      </div>
+    </div>
+
+    {!submitted && unansweredCount > 0 && (
+      <div className="assess-callout">
+        You have {unansweredCount} unanswered question{unansweredCount === 1 ? '' : 's'}.
+      </div>
+    )}
+
+    {submitted && (
+      <div className={['assess-result', passed ? 'pass' : 'fail'].join(' ')}>
+        <div className="assess-result-main">
+          <div className="assess-result-score">{percent}%</div>
+          <div>
+            <div className="assess-result-status">{passed ? 'Pass' : 'Fail'}</div>
+            <div className="assess-result-meta">
+              {correctCount}/{total} correct (pass mark {passPercent}%)
+            </div>
+          </div>
+        </div>
+      </div>
+    )}
+
+    <div className="assess-list">
+      {questions.map((q, idx) => {
+        const group = `assess-${q.id}`
+        const selected = answers[q.id]
+        const isCorrect = submitted && selected === q.correctId
+
+        return (
+          <div key={q.id} className="assess-q">
+            <div className="assess-q-head">
+              <div className="assess-q-num">Q{idx + 1}</div>
+              <div className="assess-q-prompt">{q.prompt}</div>
+            </div>
+
+            <div className="assess-opts" role="radiogroup" aria-label={q.prompt}>
+              {q.options.map(opt => {
+                const checked = selected === opt.id
+
+                const stateClass =
+                  !submitted
+                    ? ''
+                    : opt.id === q.correctId
+                      ? 'opt-correct'
+                      : checked
+                        ? 'opt-wrong'
+                        : 'opt-muted'
+
+                return (
+                  <label
+                    key={opt.id}
+                    className={['assess-opt', stateClass, checked ? 'opt-selected' : ''].join(' ')}
+                  >
+                    <input
+                      type="radio"
+                      name={group}
+                      checked={checked}
+                      onChange={() => setAnswers(prev => ({ ...prev, [q.id]: opt.id }))}
+                    />
+                    <span>{opt.label}</span>
+                  </label>
+                )
+              })}
+            </div>
+
+            {submitted && (
+              <div className={['assess-feedback', isCorrect ? 'ok' : 'no'].join(' ')}>
+                <div className="assess-feedback-title">{isCorrect ? 'Correct' : 'Incorrect'}</div>
+                <div className="assess-feedback-body">
+                  {selected === null ? 'No answer selected.' : q.explanation}
+                </div>
+              </div>
+            )}
+          </div>
+        )
+      })}
+    </div>
+
+    {/* Buttons moved to the end */}
+    <div className="assess-actions assess-actions-bottom">
+      <button type="button" className="nav-btn nav-btn-secondary" onClick={reset}>
+        Reset
+      </button>
+      <button type="button" className="nav-btn nav-btn-primary" onClick={onSubmit}>
+        Submit
+      </button>
+    </div>
+  </div>
+)
+
+}
+
+
 const lessons: Lesson[] = [
   {
     id: 1,
@@ -590,55 +735,270 @@ const lessons: Lesson[] = [
     type: 'quiz',
     status: 'locked',
     content: (
-      <>
-        <div className="lesson-tags">
-          <span className="tag quiz">Quiz</span>
-          <span className="tag neutral">Locked</span>
-        </div>
+  <>
+    <div className="lesson-tags">
+      <span className="tag quiz">Quiz</span>
+      <span className="tag neutral">Locked</span>
+    </div>
 
-        <h2 className="lesson-title">Module 1 Assessment</h2>
+    <h2 className="lesson-title">Module 1 Assessment</h2>
 
-        <section className="lesson-section">
-          <h3>What this covers</h3>
-          <ul>
-            <li>Recognising template writing and generic analysis.</li>
-            <li>Finding numeric hallucinations and unit errors.</li>
-            <li>Choosing a safe review workflow under time pressure.</li>
-          </ul>
-        </section>
+    <section className="lesson-section">
+      <h3>What this covers</h3>
+      <ul>
+        <li>Spotting template language and generic filler.</li>
+        <li>Finding likely numeric hallucinations and unit mistakes.</li>
+        <li>Choosing a safe review workflow under time pressure.</li>
+      </ul>
+    </section>
 
-        <section className="lesson-section">
-          <h3>Sample question</h3>
-          <div className="quiz-card">
-            <p className="quiz-heading">Workflow decision</p>
-            <p>
-              You receive an AI-generated earnings note. It contains 6 numeric claims and 3 causal statements. You have
-              7 minutes before distribution.
-            </p>
-
-            <MCQ
-              question="What is the best first action?"
-              options={[
-                { id: 'extract', label: 'Extract and source-check all numeric claims.' },
-                { id: 'polish', label: 'Polish the wording to sound more professional.' },
-                { id: 'macro', label: 'Add more macro context at the top.' },
-              ]}
-              correctId="extract"
-              explanationCorrect="Correct: the fastest risk-reducer is verifying facts. Wording improvements can wait until the numeric backbone is solid."
-              explanationWrong="Under time pressure, you reduce risk by verifying the factual backbone (numbers and sources) before polishing narrative or adding extra context."
-            />
-          </div>
-        </section>
-
-        <section className="lesson-section">
-          <h3>Reminder</h3>
-          <p>
-            The goal is not to guess “AI or human” perfectly—it’s to reduce risk by verifying what matters and
-            documenting what you can’t verify.
-          </p>
-        </section>
-      </>
-    ),
+    <Module1Assessment
+      passPercent={90}
+      questions={[
+        {
+          id: 'q1',
+          prompt: 'You receive an AI-generated note with several numbers. What is the best first action?',
+          options: [
+            { id: 'a', label: 'Extract and verify every numeric claim against a source.' },
+            { id: 'b', label: 'Rewrite it to sound more professional.' },
+            { id: 'c', label: 'Add more macro context at the top.' },
+            { id: 'd', label: 'Skim for tone and publish if it sounds cautious.' },
+          ],
+          correctId: 'a',
+          explanation: 'Numbers are the risk backbone: verify and source them first, then polish narrative.',
+        },
+        {
+          id: 'q2',
+          prompt: 'Which sentence is most likely “generic filler”?',
+          options: [
+            { id: 'a', label: 'Gross margin rose 120 bps, driven by mix shift in Segment A (see slide 12).' },
+            { id: 'b', label: 'The company delivered solid execution and strong momentum across key initiatives.' },
+            { id: 'c', label: 'APAC grew 18% YoY due to new store openings and pricing (call transcript 10:14).' },
+            { id: 'd', label: 'FX headwinds reduced revenue by ~2 pts versus constant currency (note 3).' },
+          ],
+          correctId: 'b',
+          explanation: 'It’s not falsifiable: no magnitude, no driver you can check, no source.',
+        },
+        {
+          id: 'q3',
+          prompt: 'A draft says “Operating margin improved meaningfully.” What’s the best upgrade?',
+          options: [
+            { id: 'a', label: 'Replace “meaningfully” with “significantly”.' },
+            { id: 'b', label: 'Add the magnitude (bps/%) and the driver, tied to a source.' },
+            { id: 'c', label: 'Shorten the paragraph.' },
+            { id: 'd', label: 'Delete the margin mention.' },
+          ],
+          correctId: 'b',
+          explanation: 'Finance writing needs magnitude + driver + source to be verifiable.',
+        },
+        {
+          id: 'q4',
+          prompt: 'Which is the most “hallucination-shaped” claim?',
+          options: [
+            { id: 'a', label: 'Revenue was $3.1B (+18% YoY), per the income statement.' },
+            { id: 'b', label: '40% of incremental revenue came from digital transformation initiatives.' },
+            { id: 'c', label: 'Management guided full-year revenue growth of 10–12%.' },
+            { id: 'd', label: 'The company reported net margin of 21.2%.' },
+          ],
+          correctId: 'b',
+          explanation: 'Precise attribution without a clear source is a classic failure mode; treat it as “must-source”.',
+        },
+        {
+          id: 'q5',
+          prompt: 'A note mixes “bps” and “%”. What is safest?',
+          options: [
+            { id: 'a', label: 'Recompute the change from the underlying numbers.' },
+            { id: 'b', label: 'Swap bps to % everywhere for consistency.' },
+            { id: 'c', label: 'Leave it—readers will understand.' },
+            { id: 'd', label: 'Remove all unit mentions.' },
+          ],
+          correctId: 'a',
+          explanation: 'Unit slips (bps vs percentage points) are common and can materially change meaning—recompute to confirm.',
+        },
+        {
+          id: 'q6',
+          prompt: 'What’s the best reason to prefer “specific” over “generic” in a client note?',
+          options: [
+            { id: 'a', label: 'Specific statements are easier to verify or falsify.' },
+            { id: 'b', label: 'Specific statements sound more confident.' },
+            { id: 'c', label: 'Generic statements are always wrong.' },
+            { id: 'd', label: 'Generic statements are too short.' },
+          ],
+          correctId: 'a',
+          explanation: 'Specific claims can be checked against sources; generic claims often can’t.',
+        },
+        {
+          id: 'q7',
+          prompt: 'A draft includes “APAC contributed 55% of incremental growth.” What do you do?',
+          options: [
+            { id: 'a', label: 'Find the source (table/quote) and recompute the 55%.' },
+            { id: 'b', label: 'Delete the number to avoid risk.' },
+            { id: 'c', label: 'Keep it—it sounds precise.' },
+            { id: 'd', label: 'Rewrite it to “APAC contributed meaningfully”.' },
+          ],
+          correctId: 'a',
+          explanation: 'Precise contribution claims are “must-source” and should be recomputed if possible.',
+        },
+        {
+          id: 'q8',
+          prompt: 'Which is the best indicator a paragraph is template-driven?',
+          options: [
+            { id: 'a', label: 'It follows a rigid revenue → margin → outlook → risks structure with repetitive phrasing.' },
+            { id: 'b', label: 'It includes a quote.' },
+            { id: 'c', label: 'It mentions two risks.' },
+            { id: 'd', label: 'It is short.' },
+          ],
+          correctId: 'a',
+          explanation: 'Template structure isn’t bad by itself, but repeated phrasing + lack of specifics can signal “filled” content.',
+        },
+        {
+          id: 'q9',
+          prompt: 'Under time pressure, what’s the safest “minimum viable” review?',
+          options: [
+            { id: 'a', label: 'Source-check every numeric claim and flag anything unsourced.' },
+            { id: 'b', label: 'Fix grammar and ship.' },
+            { id: 'c', label: 'Only check the first paragraph.' },
+            { id: 'd', label: 'Remove risk language so it reads cleaner.' },
+          ],
+          correctId: 'a',
+          explanation: 'Fact verification beats style polishing when the risk is sending incorrect numbers.',
+        },
+        {
+          id: 'q10',
+          prompt: 'A draft has consistent numbers but weak reasoning. What’s the best characterization?',
+          options: [
+            { id: 'a', label: 'Lower factual risk, but still potentially misleading; improve drivers/logic and cite evidence.' },
+            { id: 'b', label: 'Safe to publish because numbers are correct.' },
+            { id: 'c', label: 'Unsafe only if it sounds confident.' },
+            { id: 'd', label: 'Reasoning doesn’t matter in finance commentary.' },
+          ],
+          correctId: 'a',
+          explanation: 'Correct numbers aren’t enough—causal claims and drivers still need evidence.',
+        },
+        {
+          id: 'q11',
+          prompt: 'Which editing change reduces risk the most?',
+          options: [
+            { id: 'a', label: 'Add a source reference for each number and attribution.' },
+            { id: 'b', label: 'Replace “robust” with “strong”.' },
+            { id: 'c', label: 'Add an extra concluding sentence.' },
+            { id: 'd', label: 'Use more formal language.' },
+          ],
+          correctId: 'a',
+          explanation: 'Sourcing makes claims auditable and reduces the chance of shipping an invented detail.',
+        },
+        {
+          id: 'q12',
+          prompt: 'A note says: “Demand was strong, driving higher revenue.” What’s missing?',
+          options: [
+            { id: 'a', label: 'A measurable link: which segment, what metric, what evidence.' },
+            { id: 'b', label: 'More adjectives.' },
+            { id: 'c', label: 'A shorter sentence.' },
+            { id: 'd', label: 'A confident recommendation.' },
+          ],
+          correctId: 'a',
+          explanation: 'Drivers should be tied to specific evidence (segment, pricing/volume, quote, table).',
+        },
+        {
+          id: 'q13',
+          prompt: 'Which is the safest way to handle an unsourced precise claim you can’t verify in time?',
+          options: [
+            { id: 'a', label: 'Remove it or rewrite it into a clearly qualified, non-precise statement (and note it’s unverified).' },
+            { id: 'b', label: 'Keep it because it might be true.' },
+            { id: 'c', label: 'Make it sound more confident to reduce doubt.' },
+            { id: 'd', label: 'Move it to the top so it’s noticed.' },
+          ],
+          correctId: 'a',
+          explanation: 'If you can’t source it, don’t ship it as a precise fact—either verify or downgrade/remove.',
+        },
+        {
+          id: 'q14',
+          prompt: 'What’s the main risk with “too perfect” balanced pros/cons paragraphs?',
+          options: [
+            { id: 'a', label: 'It can mask shallow analysis: symmetry replaces evidence.' },
+            { id: 'b', label: 'It is always inaccurate.' },
+            { id: 'c', label: 'It is too long.' },
+            { id: 'd', label: 'It uses bullet points.' },
+          ],
+          correctId: 'a',
+          explanation: 'Neat symmetry can be a sign of generated filler rather than evidence-based reasoning.',
+        },
+        {
+          id: 'q15',
+          prompt: 'A draft uses the same opener across paragraphs (“robust performance”, “strong momentum”). What’s the best interpretation?',
+          options: [
+            { id: 'a', label: 'Potential repetitive template language—check if the paragraphs add new, verifiable information.' },
+            { id: 'b', label: 'It is definitely human-written.' },
+            { id: 'c', label: 'Repetition is always fine.' },
+            { id: 'd', label: 'It means the company is doing well.' },
+          ],
+          correctId: 'a',
+          explanation: 'Repetition is a cue to inspect for filler and missing evidence, not proof by itself.',
+        },
+        {
+          id: 'q16',
+          prompt: 'Which statement is best practice for a causal claim (“because of”)?',
+          options: [
+            { id: 'a', label: 'Only state it if you can point to evidence (quote/table) supporting that driver.' },
+            { id: 'b', label: 'Always include one causal driver to sound insightful.' },
+            { id: 'c', label: 'Causal language is harmless if numbers are right.' },
+            { id: 'd', label: 'Causal claims should never be included.' },
+          ],
+          correctId: 'a',
+          explanation: 'Causal claims raise the bar: you need evidence, otherwise it becomes speculation presented as fact.',
+        },
+        {
+          id: 'q17',
+          prompt: 'What’s the best quick technique to catch numeric hallucinations?',
+          options: [
+            { id: 'a', label: 'List every number in the draft and map each to a source.' },
+            { id: 'b', label: 'Read it out loud.' },
+            { id: 'c', label: 'Check spelling.' },
+            { id: 'd', label: 'Shorten sentences.' },
+          ],
+          correctId: 'a',
+          explanation: 'A “numbers inventory” forces source mapping and reveals unsupported claims quickly.',
+        },
+        {
+          id: 'q18',
+          prompt: 'A draft swaps quarterly vs yearly figures in one paragraph. What category of issue is this?',
+          options: [
+            { id: 'a', label: 'Time-window drift (scope mismatch).' },
+            { id: 'b', label: 'Tone mismatch.' },
+            { id: 'c', label: 'Formatting preference.' },
+            { id: 'd', label: 'It’s not an issue if the conclusion is right.' },
+          ],
+          correctId: 'a',
+          explanation: 'Mixing time windows is a classic subtle error that can flip interpretation.',
+        },
+        {
+          id: 'q19',
+          prompt: 'If you must use AI for drafting under pressure, what’s the safest workflow?',
+          options: [
+            { id: 'a', label: 'Extract verified facts first, then generate narrative only from that fact list.' },
+            { id: 'b', label: 'Generate the narrative first, then hope the numbers are right.' },
+            { id: 'c', label: 'Ask the model to “be accurate”.' },
+            { id: 'd', label: 'Let the model infer missing numbers from context.' },
+          ],
+          correctId: 'a',
+          explanation: 'Constrain generation to verified inputs; don’t let it invent the factual backbone.',
+        },
+        {
+          id: 'q20',
+          prompt: 'What’s the safest default stance toward any unsourced number in an AI draft?',
+          options: [
+            { id: 'a', label: 'Treat it as unverified until you can trace it to a source.' },
+            { id: 'b', label: 'Assume it is correct because it looks plausible.' },
+            { id: 'c', label: 'Assume it is wrong and delete all numbers.' },
+            { id: 'd', label: 'Convert it into a percentage.' },
+          ],
+          correctId: 'a',
+          explanation: 'Plausible-looking numbers are still risky; trace to source or don’t publish as fact.',
+        },
+      ]}
+    />
+  </>
+)
   },
 ]
 
