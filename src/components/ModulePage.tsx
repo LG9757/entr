@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import '../App.css'
 
@@ -21,22 +21,57 @@ type ModulePageProps = {
   backPath: string
 }
 
+const storageKey = (moduleNumber: number) => `course:module:${moduleNumber}:completedIds`
+
 export default function ModulePage({ moduleTitle, moduleNumber, lessons, backPath }: ModulePageProps) {
   const navigate = useNavigate()
   const [activeIndex, setActiveIndex] = useState(0)
 
-  const [completedIds, setCompletedIds] = useState<number[]>(
-    lessons.filter(l => l.status === 'completed').map(l => l.id)
+  // Default progress: anything that ships as "completed" in the lesson data.
+  const defaultCompleted = useMemo(
+    () => lessons.filter(l => l.status === 'completed').map(l => l.id),
+    [lessons]
   )
+
+  // Load saved progress once (lazy init). This avoids reading localStorage on every render. [web:34]
+  const [completedIds, setCompletedIds] = useState<number[]>(() => {
+    try {
+      const raw = window.localStorage.getItem(storageKey(moduleNumber))
+      if (!raw) return defaultCompleted
+      const parsed = JSON.parse(raw)
+      return Array.isArray(parsed) ? parsed : defaultCompleted
+    } catch {
+      return defaultCompleted
+    }
+  })
+
+  // Keep storage in sync when progress changes. [web:34]
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(storageKey(moduleNumber), JSON.stringify(completedIds))
+    } catch {
+      // ignore write errors (private mode, quota, etc.)
+    }
+  }, [completedIds, moduleNumber])
 
   const totalLessons = lessons.length
   const activeLesson = lessons[activeIndex]
   const completedCount = completedIds.length
   const isLast = activeIndex === lessons.length - 1
 
+  // Sequential unlock:
+  // - lesson 0 always accessible
+  // - lesson i accessible if previous lesson is completed, or if it's itself completed already
+  const isAccessible = (index: number) => {
+    if (index <= 0) return true
+    const lessonId = lessons[index]?.id
+    const prevLessonId = lessons[index - 1]?.id
+    return completedIds.includes(lessonId) || completedIds.includes(prevLessonId)
+  }
+
   const goTo = (index: number) => {
     if (index < 0 || index >= lessons.length) return
-    if (lessons[index].status === 'locked') return
+    if (!isAccessible(index)) return
     setActiveIndex(index)
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
@@ -73,7 +108,7 @@ export default function ModulePage({ moduleTitle, moduleNumber, lessons, backPat
 
           <ul className="lesson-list">
             {lessons.map((lesson, index) => {
-              const locked = lesson.status === 'locked'
+              const locked = !isAccessible(index)
               const completed = completedIds.includes(lesson.id)
 
               return (
@@ -116,11 +151,7 @@ export default function ModulePage({ moduleTitle, moduleNumber, lessons, backPat
               Previous
             </button>
 
-            <button
-              type="button"
-              className="nav-btn nav-btn-primary"
-              onClick={markCompletedAndNext}
-            >
+            <button type="button" className="nav-btn nav-btn-primary" onClick={markCompletedAndNext}>
               {isLast ? 'Mark Complete' : 'Next'}
             </button>
           </div>
