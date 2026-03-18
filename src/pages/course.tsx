@@ -1,5 +1,6 @@
 import '../App.css'
 import { useNavigate } from 'react-router-dom'
+import AppHeader from '../components/AppHeader'
 import {
   getCompletedModuleCount,
   getNextUnlockedModule,
@@ -20,15 +21,14 @@ export default function Course() {
 
   return (
     <div className="course-page-root">
+      <AppHeader
+        title="Recognising AI Content in Finance"
+        subtitle="A structured learning path for reviewing AI-assisted finance content safely and critically."
+        backLabel="Back to Courses"
+        onBack={() => navigate('/home')}
+      />
+
       <header className="course-hero course-hero-clean">
-        <div className="course-hero-top">
-          <button className="back-link" onClick={() => navigate('/home')}>
-            Back to Courses
-          </button>
-
-          <div className="course-hero-title">Recognising AI Content in Finance</div>
-        </div>
-
         <div className="course-hero-clean-grid">
           <section className="course-hero-card primary course-hero-main-card">
             <div className="course-hero-label">Learning path</div>

@@ -1,5 +1,6 @@
 import '../App.css'
 import { useNavigate } from 'react-router-dom'
+import AppHeader from '../components/AppHeader'
 import { premiumCourse, setPremiumEnrollment } from '../lib/premiumCourse'
 
 export default function PremiumPayment() {
@@ -12,15 +13,14 @@ export default function PremiumPayment() {
 
   return (
     <div className="premium-page-root premium-payment-root">
-      <header className="premium-topbar">
-        <button className="premium-back" onClick={() => navigate('/home')}>
-          Back to Home
-        </button>
-      </header>
+      <AppHeader
+        title="Complete Your Enrollment"
+        subtitle={premiumCourse.title}
+        backLabel="Back to Home"
+        onBack={() => navigate('/home')}
+      />
 
       <main className="payment-layout">
-        <div className="payment-heading">Complete Your Enrollment</div>
-
         <section className="payment-card payment-summary-card">
           <h2>Order Summary</h2>
           <div className="payment-course-title">{premiumCourse.title}</div>

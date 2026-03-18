@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import '../App.css'
+import AppHeader from './AppHeader'
 
 export type LessonStatus = 'completed' | 'current' | 'locked'
 export type LessonType = 'video' | 'article' | 'quiz'
@@ -101,24 +102,20 @@ export default function ModulePage({ moduleTitle, moduleNumber, lessons, backPat
 
   return (
     <div className="lesson-page-root">
-      <header className="lesson-header">
-        <button className="back-link" onClick={() => navigate(backPath)}>
-          Back to Course
-        </button>
-
-        <div className="lesson-header-middle">
-          <div className="lesson-header-eyebrow">Learning module</div>
-          <div className="lesson-header-title">Module {moduleNumber}: {moduleTitle}</div>
-          <div className="lesson-header-sub">Lesson {activeIndex + 1} of {totalLessons}</div>
-        </div>
-
-        <div className="lesson-header-progress">
-          <span>{completedCount}/{totalLessons} completed</span>
-          <div className="lesson-header-progress-bar" aria-hidden="true">
-            <div className="lesson-header-progress-fill" style={{ width: `${progressPercent}%` }} />
+      <AppHeader
+        title={`Module ${moduleNumber}: ${moduleTitle}`}
+        subtitle={`Lesson ${activeIndex + 1} of ${totalLessons}`}
+        backLabel="Back to Course"
+        onBack={() => navigate(backPath)}
+        rightSlot={
+          <div className="lesson-header-progress">
+            <span>{completedCount}/{totalLessons} completed</span>
+            <div className="lesson-header-progress-bar" aria-hidden="true">
+              <div className="lesson-header-progress-fill" style={{ width: `${progressPercent}%` }} />
+            </div>
           </div>
-        </div>
-      </header>
+        }
+      />
 
       <main className="lesson-layout">
         <aside className="lesson-sidebar">

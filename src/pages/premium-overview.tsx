@@ -1,5 +1,6 @@
 import '../App.css'
 import { useNavigate } from 'react-router-dom'
+import AppHeader from '../components/AppHeader'
 import { getPremiumEnrollment, premiumCourse } from '../lib/premiumCourse'
 
 export default function PremiumOverview() {
@@ -8,11 +9,12 @@ export default function PremiumOverview() {
 
   return (
     <div className="premium-page-root">
-      <header className="premium-topbar">
-        <button className="premium-back" onClick={() => navigate('/home')}>
-          Back to Courses
-        </button>
-      </header>
+      <AppHeader
+        title={premiumCourse.title}
+        subtitle="Premium course overview"
+        backLabel="Back to Courses"
+        onBack={() => navigate('/home')}
+      />
 
       <main className="premium-hero">
         <section className="premium-copy">

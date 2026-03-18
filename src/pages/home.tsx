@@ -1,5 +1,6 @@
 import '../App.css'
 import { useNavigate } from 'react-router-dom'
+import AppHeader from '../components/AppHeader'
 import { getPremiumEnrollment } from '../lib/premiumCourse'
 
 export default function Home() {
@@ -8,12 +9,15 @@ export default function Home() {
 
   return (
     <div className="dashboard-root">
-      <header className="dashboard-header">
-        <div className="dashboard-title">My Learning Dashboard</div>
-        <button className="logout-button" onClick={() => navigate('/')}>
-          Logout
-        </button>
-      </header>
+      <AppHeader
+        title="My Learning Dashboard"
+        subtitle="Your enrolled courses, premium options, and latest progress in one place."
+        rightSlot={
+          <button className="logout-button" onClick={() => navigate('/')}>
+            Logout
+          </button>
+        }
+      />
 
       <main className="dashboard-main">
         <section className="dashboard-section">

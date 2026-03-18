@@ -1,5 +1,6 @@
 import '../App.css'
 import { useNavigate } from 'react-router-dom'
+import AppHeader from '../components/AppHeader'
 import { premiumCourse, premiumCurriculum } from '../lib/premiumCourse'
 
 export default function PremiumCurriculum() {
@@ -7,15 +8,15 @@ export default function PremiumCurriculum() {
 
   return (
     <div className="premium-page-root premium-curriculum-root">
-      <header className="premium-topbar">
-        <button className="premium-back" onClick={() => navigate('/premium-course')}>
-          Back to Course Overview
-        </button>
-      </header>
+      <AppHeader
+        title="Complete Course Curriculum"
+        subtitle={premiumCourse.title}
+        backLabel="Back to Course Overview"
+        onBack={() => navigate('/premium-course')}
+      />
 
       <main className="curriculum-layout">
         <section className="curriculum-hero">
-          <h1 className="curriculum-title">Complete Course Curriculum</h1>
           <p className="curriculum-copy">
             Explore all {premiumCourse.modules} modules, {premiumCourse.lessons} lessons, and {premiumCourse.hours} hours
             of comprehensive content designed to make you an expert at detecting AI-generated content.
