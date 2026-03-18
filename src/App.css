@@ -1227,3 +1227,494 @@ button[type="submit"]:hover {
   justify-content: flex-end;
   gap: 10px;
 }
+
+/* =========================================================
+   Premium course flow
+   ========================================================= */
+.premium-page-root {
+  min-height: 100vh;
+  color: #f8fafc;
+  background:
+    radial-gradient(circle at top left, rgba(255, 255, 255, 0.05) 0, rgba(255, 255, 255, 0.05) 10px, transparent 10px, transparent 34px),
+    linear-gradient(135deg, #1e1b4b 0%, #4c1d95 50%, #6b21a8 100%);
+  background-size: 48px 48px, auto;
+}
+
+.premium-topbar {
+  padding: 1.25rem 3rem 0;
+}
+
+.premium-back {
+  background: none;
+  border: none;
+  color: #f8fafc;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.premium-hero {
+  min-height: calc(100vh - 4rem);
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 2rem 3rem 3rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(420px, 0.95fr);
+  gap: 3rem;
+  align-items: center;
+}
+
+.premium-copy {
+  max-width: 44rem;
+}
+
+.premium-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.45rem 0.8rem;
+  border-radius: 999px;
+  background: rgba(168, 85, 247, 0.22);
+  border: 1px solid rgba(216, 180, 254, 0.28);
+  color: #f3e8ff;
+  font-size: 0.88rem;
+  font-weight: 700;
+  margin-bottom: 1.6rem;
+}
+
+.premium-title {
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  line-height: 1.08;
+  margin-bottom: 1rem;
+  max-width: 14ch;
+}
+
+.premium-subtitle {
+  font-size: clamp(1.1rem, 2vw, 1.35rem);
+  line-height: 1.55;
+  color: rgba(241, 245, 249, 0.88);
+  max-width: 30rem;
+}
+
+.premium-cta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin: 2rem 0 2.6rem;
+}
+
+.premium-primary-btn,
+.premium-secondary-btn {
+  border-radius: 1rem;
+  padding: 0.95rem 1.6rem;
+  font-size: 1rem;
+  font-weight: 700;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: transform 120ms ease, box-shadow 120ms ease, background 120ms ease;
+}
+
+.premium-primary-btn {
+  background: linear-gradient(135deg, #a855f7 0%, #9333ea 100%);
+  color: #fff;
+  box-shadow: 0 18px 34px rgba(91, 33, 182, 0.28);
+}
+
+.premium-secondary-btn {
+  background: rgba(255, 255, 255, 0.06);
+  color: #f8fafc;
+  border-color: rgba(255, 255, 255, 0.18);
+}
+
+.premium-primary-btn:hover,
+.premium-secondary-btn:hover {
+  transform: translateY(-1px);
+}
+
+.premium-stat-row {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1.25rem;
+  max-width: 52rem;
+}
+
+.premium-stat-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.premium-stat-label {
+  margin-top: 0.25rem;
+  color: rgba(226, 232, 240, 0.76);
+  font-size: 0.98rem;
+}
+
+.premium-visual {
+  display: flex;
+  justify-content: center;
+}
+
+.premium-chip-board {
+  position: relative;
+  width: min(100%, 52rem);
+  aspect-ratio: 1 / 0.82;
+  border-radius: 1.9rem;
+  overflow: hidden;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.02)),
+    radial-gradient(circle at 50% 45%, rgba(216, 180, 254, 0.18), transparent 25%),
+    linear-gradient(135deg, #111827 0%, #312e81 55%, #1f2937 100%);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 30px 70px rgba(15, 23, 42, 0.35);
+}
+
+.premium-chip-board::before,
+.premium-chip-board::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  background-size: 36px 36px;
+  opacity: 0.35;
+}
+
+.premium-chip {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 1.4rem;
+  background: linear-gradient(180deg, rgba(49, 46, 129, 0.95), rgba(30, 41, 59, 0.95));
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 18px 30px rgba(15, 23, 42, 0.35);
+}
+
+.premium-chip-main {
+  inset: 19% 28% 25% 28%;
+  font-size: clamp(3.5rem, 9vw, 5.8rem);
+  font-weight: 800;
+  letter-spacing: 0.06em;
+}
+
+.premium-chip-small {
+  width: 6rem;
+  height: 4rem;
+}
+
+.chip-top-left { top: 10%; left: 6%; }
+.chip-top-right { top: 6%; right: 10%; }
+.chip-bottom-left { bottom: 12%; left: 15%; }
+.chip-bottom-right { bottom: 10%; right: 12%; }
+
+.premium-circuit {
+  position: absolute;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(216, 180, 254, 0.75), rgba(255, 255, 255, 0.1));
+}
+
+.premium-circuit-1 {
+  height: 3px;
+  width: 30%;
+  top: 48%;
+  left: 6%;
+}
+
+.premium-circuit-2 {
+  height: 3px;
+  width: 24%;
+  top: 25%;
+  right: 10%;
+}
+
+.premium-circuit-3 {
+  width: 3px;
+  height: 22%;
+  right: 44%;
+  bottom: 8%;
+}
+
+.premium-payment-root {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02)),
+    linear-gradient(135deg, #1e1b4b 0%, #3b1d74 45%, #6b21a8 100%);
+}
+
+.payment-layout {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 2rem 2rem 3rem;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 2rem;
+  align-items: start;
+}
+
+.payment-heading {
+  grid-column: 1 / -1;
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.2rem;
+}
+
+.payment-card {
+  background: rgba(255, 255, 255, 0.98);
+  color: #0f172a;
+  border-radius: 1.5rem;
+  padding: 1.7rem;
+  box-shadow: 0 22px 50px rgba(15, 23, 42, 0.22);
+}
+
+.payment-card h2 {
+  font-size: 1.55rem;
+  margin-bottom: 0.85rem;
+}
+
+.payment-course-title {
+  font-size: 1.45rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.payment-course-copy {
+  color: #64748b;
+  line-height: 1.55;
+}
+
+.payment-divider {
+  height: 1px;
+  background: #e2e8f0;
+  margin: 1.4rem 0;
+}
+
+.payment-line-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.65rem 0;
+  font-size: 1rem;
+}
+
+.payment-line-total {
+  border-top: 1px solid #e2e8f0;
+  margin-top: 0.4rem;
+  padding-top: 0.95rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.payment-includes-box {
+  margin-top: 1.6rem;
+  background: #f8fafc;
+  border-radius: 1.15rem;
+  padding: 1.15rem 1.1rem;
+  border: 1px solid #e2e8f0;
+}
+
+.payment-includes-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 0.8rem;
+}
+
+.payment-include-item {
+  color: #334155;
+  line-height: 1.7;
+}
+
+.payment-label {
+  display: block;
+  font-weight: 600;
+  margin-top: 1.1rem;
+}
+
+.payment-input {
+  width: 100%;
+  margin-top: 0.45rem;
+  padding: 0.95rem 1rem;
+  border-radius: 0.85rem;
+  border: 1px solid #e2e8f0;
+  background: #f1f5f9;
+  font-size: 1rem;
+  color: #64748b;
+}
+
+.payment-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.payment-security-box {
+  margin-top: 1.35rem;
+  padding: 1rem 1.1rem;
+  border-radius: 1rem;
+  border: 1px solid #bfdbfe;
+  background: #eff6ff;
+  color: #1d4ed8;
+  line-height: 1.55;
+}
+
+.payment-submit-btn {
+  width: 100%;
+  margin-top: 1.4rem;
+  padding: 1rem 1.2rem;
+  border-radius: 0.95rem;
+  border: none;
+  background: #020617;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.payment-terms {
+  margin-top: 1.6rem;
+  text-align: center;
+  color: #64748b;
+  line-height: 1.6;
+}
+
+.premium-curriculum-root {
+  background:
+    linear-gradient(135deg, #17203f 0%, #40206a 48%, #6b21a8 100%);
+}
+
+.curriculum-layout {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 1.5rem 2rem 3rem;
+}
+
+.curriculum-hero {
+  max-width: 72rem;
+  margin-bottom: 2.2rem;
+}
+
+.curriculum-title {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.curriculum-copy {
+  font-size: 1.2rem;
+  line-height: 1.6;
+  color: rgba(241, 245, 249, 0.88);
+  max-width: 60rem;
+}
+
+.curriculum-meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  margin-top: 1.6rem;
+  color: #f8fafc;
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.curriculum-card-stack {
+  display: grid;
+  gap: 1.3rem;
+  max-width: 980px;
+  margin: 0 auto;
+}
+
+.curriculum-card {
+  background: rgba(255, 255, 255, 0.98);
+  color: #0f172a;
+  border-radius: 1.35rem;
+  padding: 1.4rem 1.5rem 1.5rem;
+  box-shadow: 0 22px 50px rgba(15, 23, 42, 0.18);
+}
+
+.curriculum-card-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+}
+
+.curriculum-card-badges {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.curriculum-module-pill {
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #9333ea, #a855f7);
+  color: #fff;
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.curriculum-module-time,
+.curriculum-module-lessons {
+  color: #64748b;
+  font-size: 0.98rem;
+}
+
+.curriculum-module-title {
+  font-size: 1.55rem;
+  margin: 1rem 0 1.3rem;
+}
+
+.curriculum-objectives-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin-bottom: 0.7rem;
+}
+
+.curriculum-objectives {
+  margin-left: 1.25rem;
+  color: #334155;
+  line-height: 1.8;
+}
+
+@media (max-width: 1100px) {
+  .premium-hero {
+    grid-template-columns: 1fr;
+    padding: 1.5rem 2rem 3rem;
+  }
+
+  .premium-copy {
+    max-width: none;
+  }
+
+  .payment-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .premium-topbar {
+    padding: 1rem 1rem 0;
+  }
+
+  .premium-hero,
+  .payment-layout,
+  .curriculum-layout {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .premium-stat-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .payment-row,
+  .curriculum-card-top {
+    grid-template-columns: 1fr;
+  }
+
+  .curriculum-card-top {
+    align-items: flex-start;
+  }
+
+  .curriculum-card-badges {
+    flex-wrap: wrap;
+  }
+}

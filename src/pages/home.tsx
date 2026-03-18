@@ -1,8 +1,10 @@
 import '../App.css'
 import { useNavigate } from 'react-router-dom'
+import { getPremiumEnrollment } from '../lib/premiumCourse'
 
 export default function Home() {
   const navigate = useNavigate()
+  const premiumEnrolled = getPremiumEnrollment()
 
   return (
     <div className="dashboard-root">
@@ -60,7 +62,9 @@ export default function Home() {
             <div className="course-content">
               <div className="course-header-row">
                 <h3 className="course-title">Real vs AI: Master the Art of Detection</h3>
-                <span className="badge premium">Premium</span>
+                <span className={['badge', premiumEnrolled ? 'enrolled' : 'premium'].join(' ')}>
+                  {premiumEnrolled ? 'Enrolled' : 'Premium'}
+                </span>
               </div>
 
               <p className="course-description">
@@ -71,12 +75,14 @@ export default function Home() {
               <div className="course-meta-row">
                 <span>4.9/5 rating</span>
                 <span>980 learners</span>
-                <span>4 hours</span>
-                <span>24 lessons</span>
+                <span>12+ hours</span>
+                <span>69 lessons</span>
               </div>
 
               <div className="course-actions">
-                <button className="secondary-button">View Details</button>
+                <button className="secondary-button" onClick={() => navigate('/premium-course')}>
+                  {premiumEnrolled ? 'Open Course' : 'View Details'}
+                </button>
               </div>
             </div>
           </div>

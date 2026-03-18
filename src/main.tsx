@@ -11,6 +11,9 @@ import Module3 from './pages/module3'
 import Module4 from './pages/module4'
 import Module5 from './pages/module5'
 import Module6 from './pages/module6'
+import PremiumCurriculum from './pages/premium-curriculum'
+import PremiumOverview from './pages/premium-overview'
+import PremiumPayment from './pages/premium-payment'
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
@@ -19,6 +22,9 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
         <Route path="/" element={<App />} />
         <Route path="/home" element={<App page="home" />} />
         <Route path="/course" element={<Course />} />
+        <Route path="/premium-course" element={<PremiumOverview />} />
+        <Route path="/premium-course/payment" element={<PremiumPayment />} />
+        <Route path="/premium-course/curriculum" element={<PremiumCurriculum />} />
         <Route path="/course/module-1" element={<Module1 />} />
         <Route
           path="/course/module-2"
