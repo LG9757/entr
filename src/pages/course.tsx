@@ -1,164 +1,124 @@
 import '../App.css'
 import { useNavigate } from 'react-router-dom'
+import {
+  getCompletedModuleCount,
+  getNextUnlockedModule,
+  getUnlockedModuleCount,
+  getModulePassed,
+  isModuleUnlocked,
+  moduleSummaries,
+} from '../lib/courseProgress'
 
 export default function Course() {
-    const navigate = useNavigate()
+  const navigate = useNavigate()
+  const completedModules = getCompletedModuleCount()
+  const unlockedModules = getUnlockedModuleCount()
+  const nextModule = getNextUnlockedModule()
+  const completionPercent = Math.round((completedModules / moduleSummaries.length) * 100)
+
   return (
     <div className="course-page-root">
-      {/* Top hero section */}
       <header className="course-hero">
         <div className="course-hero-top">
-            <button
-                className="back-link"
-                onClick={() => navigate('/home')}
-                >
-                Back to Courses
-            </button>
+          <button className="back-link" onClick={() => navigate('/home')}>
+            Back to Courses
+          </button>
 
-          <div className="course-hero-title">
-            Recognising AI Content in Finance
-          </div>
+          <div className="course-hero-title">Recognising AI Content in Finance</div>
           <div />
         </div>
 
         <div className="course-hero-main">
           <div className="course-hero-card primary">
-            <div className="course-hero-heading">
-              Welcome Back! 👋
-            </div>
+            <div className="course-hero-heading">Course roadmap</div>
             <p className="course-hero-text">
-              Continue your journey in learning to identify AI-generated financial
-              content. You&apos;re making great progress!
+              Work through the modules in sequence. Each completed module unlocks the next one, so the course opens up
+              as you build confidence.
             </p>
-            <button className="hero-button">
-              ▶︎ Resume Learning
+            <button className="hero-button" onClick={() => navigate(nextModule.path)}>
+              Continue with Module {nextModule.number}
             </button>
           </div>
 
           <div className="course-hero-stats">
             <div className="stat-card">
-              <h3>Overall Progress</h3>
-              <p className="stat-number">35%</p>
-              <p className="stat-sub">15 of 42 lessons completed</p>
+              <h3>Modules Completed</h3>
+              <p className="stat-number">{completedModules}/{moduleSummaries.length}</p>
+              <p className="stat-sub">{completionPercent}% of the course completed</p>
               <div className="overall-bar">
-                <div className="overall-bar-fill" style={{ width: '35%' }} />
+                <div className="overall-bar-fill" style={{ width: `${completionPercent}%` }} />
               </div>
             </div>
 
             <div className="stat-card">
-              <h3>Time Invested</h3>
-              <p className="stat-number">2h 15m</p>
-              <p className="stat-sub">~6 hours total content</p>
+              <h3>Currently Unlocked</h3>
+              <p className="stat-number">{unlockedModules}</p>
+              <p className="stat-sub">Modules available to open right now</p>
             </div>
 
             <div className="stat-card">
-              <h3>Next Milestone</h3>
-              <p className="stat-number">Complete Module 2</p>
-              <p className="stat-sub">8 lessons remaining</p>
+              <h3>Next Focus</h3>
+              <p className="stat-number">Module {nextModule.number}</p>
+              <p className="stat-sub">{nextModule.title}</p>
             </div>
           </div>
         </div>
       </header>
 
-      {/* Scrollable modules section */}
       <main className="course-modules-wrapper">
         <h2 className="course-modules-title">Course Modules</h2>
 
-        {/* Module 1 */}
-        <section className="module-card" onClick={() => navigate('/course/module-1')}>
-          <div className="module-icon playing">▶︎</div>
-          <div className="module-content">
-            <div className="module-header">
-              <h3>Module 1: Introduction to AI in Finance</h3>
-              <span className="module-badge in-progress">In Progress</span>
-            </div>
-            <p className="module-meta">
-              6 lessons • 35 min
-            </p>
+        {moduleSummaries.map(module => {
+          const unlocked = isModuleUnlocked(module.number)
+          const completed = getModulePassed(module.number)
+          const isCurrent = unlocked && !completed
 
-            <div className="module-progress">
-              <span>Progress</span>
-              <div className="module-progress-bar">
-                <div className="module-progress-fill dark" style={{ width: '50%' }} />
+          if (!unlocked) {
+            return (
+              <section key={module.number} className="locked-card">
+                <div className="locked-icon">Lock</div>
+                <div className="locked-content">
+                  <h3>
+                    Module {module.number}: {module.title}
+                  </h3>
+                  <p className="module-meta">
+                    {module.lessons} lessons | {module.duration}
+                  </p>
+                </div>
+                <span className="locked-badge">Complete Module {module.number - 1}</span>
+              </section>
+            )
+          }
+
+          return (
+            <section key={module.number} className="module-card" onClick={() => navigate(module.path)}>
+              <div className={['module-icon', isCurrent ? 'playing' : ''].join(' ')}>
+                {completed ? 'Done' : 'Open'}
               </div>
-              <span className="module-progress-text">3/6 lessons</span>
-            </div>
-          </div>
-        </section>
+              <div className="module-content">
+                <div className="module-header">
+                  <h3>
+                    Module {module.number}: {module.title}
+                  </h3>
+                  <span className={['module-badge', completed ? 'available' : isCurrent ? 'in-progress' : 'available'].join(' ')}>
+                    {completed ? 'Completed' : isCurrent ? 'Available Now' : 'Unlocked'}
+                  </span>
+                </div>
+                <p className="module-meta">
+                  {module.lessons} lessons | {module.duration}
+                </p>
 
-        {/* Module 2 */}
-        <section className="module-card">
-          <div className="module-icon">▶︎</div>
-          <div className="module-content">
-            <div className="module-header">
-              <h3>Module 2: Detecting AI-Generated Reports</h3>
-              <span className="module-badge available">Available</span>
-            </div>
-            <p className="module-meta">
-              8 lessons • 50 min
-            </p>
-
-            <div className="module-progress">
-              <span>Progress</span>
-              <div className="module-progress-bar">
-                <div className="module-progress-fill" style={{ width: '0%' }} />
+                <div className="module-progress">
+                  <span>Status</span>
+                  <div className="module-progress-bar">
+                    <div className={['module-progress-fill', completed ? 'dark' : ''].join(' ')} style={{ width: completed ? '100%' : '18%' }} />
+                  </div>
+                  <span className="module-progress-text">{completed ? 'Assessment passed' : 'Ready to begin'}</span>
+                </div>
               </div>
-              <span className="module-progress-text">0/8 lessons</span>
-            </div>
-          </div>
-        </section>
-
-        {/* Module 3 */}
-        <section className="module-card">
-          <div className="module-icon">▶︎</div>
-          <div className="module-content">
-            <div className="module-header">
-              <h3>Module 3: AI in Market Analysis</h3>
-              <span className="module-badge available">Available</span>
-            </div>
-            <p className="module-meta">
-              7 lessons • 45 min
-            </p>
-
-            <div className="module-progress">
-              <span>Progress</span>
-              <div className="module-progress-bar">
-                <div className="module-progress-fill" style={{ width: '0%' }} />
-              </div>
-              <span className="module-progress-text">0/7 lessons</span>
-            </div>
-          </div>
-        </section>
-
-        {/* Locked modules list */}
-        <section className="locked-modules">
-          <div className="locked-card">
-            <div className="locked-icon">🔒</div>
-            <div className="locked-content">
-              <h3>Module 4: Financial News Authentication</h3>
-              <p className="module-meta">6 lessons • 40 min</p>
-            </div>
-            <span className="locked-badge">Locked</span>
-          </div>
-
-          <div className="locked-card">
-            <div className="locked-icon">🔒</div>
-            <div className="locked-content">
-              <h3>Module 5: Regulatory Compliance</h3>
-              <p className="module-meta">8 lessons • 55 min</p>
-            </div>
-            <span className="locked-badge">Locked</span>
-          </div>
-
-          <div className="locked-card">
-            <div className="locked-icon">🔒</div>
-            <div className="locked-content">
-              <h3>Module 6: Case Studies &amp; Applications</h3>
-              <p className="module-meta">7 lessons • 1h 10min</p>
-            </div>
-            <span className="locked-badge">Locked</span>
-          </div>
-        </section>
+            </section>
+          )
+        })}
       </main>
     </div>
   )

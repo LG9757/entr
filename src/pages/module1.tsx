@@ -1,4 +1,4 @@
-import React, { useId, useState, useEffect } from 'react'
+import { useEffect, useId, useState } from 'react'
 import ModulePage, { type Lesson } from '../components/ModulePage'
 
 type MCQOption = { id: string; label: string }
@@ -95,7 +95,7 @@ function Module1Assessment({
   const passed = percent >= passPercent
   const unansweredCount = questions.reduce((acc, q) => acc + (answers[q.id] ? 0 : 1), 0)
 
-  const passKey = `course:module:${moduleNumber}:passed`
+ const passKey = `course:module:${moduleNumber}:passed`
 
   const onSubmit = () => {
     setSubmitted(true)

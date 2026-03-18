@@ -2,18 +2,15 @@ import '../App.css'
 import { useNavigate } from 'react-router-dom'
 
 export default function Home() {
-    const navigate = useNavigate()
+  const navigate = useNavigate()
+
   return (
     <div className="dashboard-root">
       <header className="dashboard-header">
         <div className="dashboard-title">My Learning Dashboard</div>
-        <button
-            className="logout-button"
-            onClick={() => navigate('/')}
-            >
-            Logout
+        <button className="logout-button" onClick={() => navigate('/')}>
+          Logout
         </button>
-
       </header>
 
       <main className="dashboard-main">
@@ -22,45 +19,30 @@ export default function Home() {
 
           <div className="course-card">
             <div className="course-icon primary">
-              <span className="checkmark">✓</span>
+              <span className="checkmark">AI</span>
             </div>
 
             <div className="course-content">
               <div className="course-header-row">
-                <h3 className="course-title">
-                  Recognising AI Content in Finance
-                </h3>
+                <h3 className="course-title">Recognising AI Content in Finance</h3>
                 <span className="badge enrolled">Enrolled</span>
               </div>
 
               <p className="course-description">
-                Learn to identify AI-generated financial reports, analysis, 
-                and market commentary to make informed decisions.
+                Learn to identify AI-generated financial reports, market commentary, synthetic news signals, and the
+                compliance risks that come with automated drafting.
               </p>
 
               <div className="course-meta-row">
-                <span>⭐ 4.8/5</span>
-                <span>👥 1,245 students</span>
-                <span>⏱ 6 hours</span>
-                <span>🎓 42 lessons</span>
-              </div>
-
-              <div className="progress-block">
-                <div className="progress-top">
-                  <span>Your Progress</span>
-                  <span>35% Complete</span>
-                </div>
-                <div className="progress-bar">
-                  <div className="progress-bar-fill" style={{ width: '35%' }} />
-                </div>
+                <span>4.8/5 rating</span>
+                <span>1,245 learners</span>
+                <span>About 8 hours</span>
+                <span>47 lessons</span>
               </div>
 
               <div className="course-actions">
-                <button
-                    className="primary-button"
-                    onClick={() => navigate('/course')}
-                    >
-                    Continue Course
+                <button className="primary-button" onClick={() => navigate('/course')}>
+                  Continue Course
                 </button>
               </div>
             </div>
@@ -77,22 +59,20 @@ export default function Home() {
 
             <div className="course-content">
               <div className="course-header-row">
-                <h3 className="course-title">
-                  Real vs AI: Master the Art of Detection
-                </h3>
+                <h3 className="course-title">Real vs AI: Master the Art of Detection</h3>
                 <span className="badge premium">Premium</span>
               </div>
 
               <p className="course-description">
-                Comprehensive course teaching you to distinguish between real 
-                and AI-generated content across text, images, video, and audio.
+                A broader programme covering text, image, video, and audio authenticity across consumer and professional
+                settings.
               </p>
 
               <div className="course-meta-row">
-                <span>⭐ 4.9/5</span>
-                <span>👥 980 students</span>
-                <span>⏱ 4 hours</span>
-                <span>🎓 24 lessons</span>
+                <span>4.9/5 rating</span>
+                <span>980 learners</span>
+                <span>4 hours</span>
+                <span>24 lessons</span>
               </div>
 
               <div className="course-actions">

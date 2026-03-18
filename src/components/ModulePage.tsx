@@ -23,17 +23,21 @@ type ModulePageProps = {
 
 const storageKey = (moduleNumber: number) => `course:module:${moduleNumber}:completedIds`
 
+const lessonTypeLabel: Record<LessonType, string> = {
+  video: 'Video lesson',
+  article: 'Reading',
+  quiz: 'Knowledge check',
+}
+
 export default function ModulePage({ moduleTitle, moduleNumber, lessons, backPath }: ModulePageProps) {
   const navigate = useNavigate()
   const [activeIndex, setActiveIndex] = useState(0)
 
-  // Default progress: anything that ships as "completed" in the lesson data.
   const defaultCompleted = useMemo(
-    () => lessons.filter(l => l.status === 'completed').map(l => l.id),
+    () => lessons.filter(lesson => lesson.status === 'completed').map(lesson => lesson.id),
     [lessons]
   )
 
-  // Load saved progress once (lazy init). This avoids reading localStorage on every render. [web:34]
   const [completedIds, setCompletedIds] = useState<number[]>(() => {
     try {
       const raw = window.localStorage.getItem(storageKey(moduleNumber))
@@ -45,12 +49,11 @@ export default function ModulePage({ moduleTitle, moduleNumber, lessons, backPat
     }
   })
 
-  // Keep storage in sync when progress changes. [web:34]
   useEffect(() => {
     try {
       window.localStorage.setItem(storageKey(moduleNumber), JSON.stringify(completedIds))
     } catch {
-      // ignore write errors (private mode, quota, etc.)
+      // Ignore storage failures such as private mode restrictions.
     }
   }, [completedIds, moduleNumber])
 
@@ -58,15 +61,13 @@ export default function ModulePage({ moduleTitle, moduleNumber, lessons, backPat
   const activeLesson = lessons[activeIndex]
   const completedCount = completedIds.length
   const isLast = activeIndex === lessons.length - 1
+  const progressPercent = totalLessons === 0 ? 0 : Math.round((completedCount / totalLessons) * 100)
 
-  // Sequential unlock:
-  // - lesson 0 always accessible
-  // - lesson i accessible if previous lesson is completed, or if it's itself completed already
   const isAccessible = (index: number) => {
     if (index <= 0) return true
     const lessonId = lessons[index]?.id
-    const prevLessonId = lessons[index - 1]?.id
-    return completedIds.includes(lessonId) || completedIds.includes(prevLessonId)
+    const previousLessonId = lessons[index - 1]?.id
+    return completedIds.includes(lessonId) || completedIds.includes(previousLessonId)
   }
 
   const goTo = (index: number) => {
@@ -77,7 +78,7 @@ export default function ModulePage({ moduleTitle, moduleNumber, lessons, backPat
   }
 
   const markCompletedAndNext = () => {
-    setCompletedIds(prev => (prev.includes(activeLesson.id) ? prev : [...prev, activeLesson.id]))
+    setCompletedIds(previous => (previous.includes(activeLesson.id) ? previous : [...previous, activeLesson.id]))
     if (!isLast) goTo(activeIndex + 1)
   }
 
@@ -89,13 +90,14 @@ export default function ModulePage({ moduleTitle, moduleNumber, lessons, backPat
       return false
     }
   })
+
   useEffect(() => {
     try {
       setModulePassed(window.localStorage.getItem(passedKey) === 'true')
-    } catch {}
-  }, [activeIndex, moduleNumber])
-
-
+    } catch {
+      setModulePassed(false)
+    }
+  }, [activeIndex, moduleNumber, passedKey])
 
   return (
     <div className="lesson-page-root">
@@ -105,21 +107,39 @@ export default function ModulePage({ moduleTitle, moduleNumber, lessons, backPat
         </button>
 
         <div className="lesson-header-middle">
-          <div className="lesson-header-title">
-            Module {moduleNumber}: {moduleTitle}
-          </div>
-          <div className="lesson-header-sub">
-            Lesson {activeLesson.id} of {totalLessons}
-          </div>
+          <div className="lesson-header-eyebrow">Learning module</div>
+          <div className="lesson-header-title">Module {moduleNumber}: {moduleTitle}</div>
+          <div className="lesson-header-sub">Lesson {activeIndex + 1} of {totalLessons}</div>
         </div>
 
         <div className="lesson-header-progress">
-          {completedCount}/{totalLessons} completed
+          <span>{completedCount}/{totalLessons} completed</span>
+          <div className="lesson-header-progress-bar" aria-hidden="true">
+            <div className="lesson-header-progress-fill" style={{ width: `${progressPercent}%` }} />
+          </div>
         </div>
       </header>
 
       <main className="lesson-layout">
         <aside className="lesson-sidebar">
+          <div className="sidebar-card">
+            <div className="sidebar-title">Module overview</div>
+            <div className="sidebar-module-title">{moduleTitle}</div>
+            <p className="sidebar-copy">
+              Work through each lesson in order, then complete the final check to finish the module.
+            </p>
+            <div className="sidebar-stat-row">
+              <div>
+                <span className="sidebar-stat-value">{totalLessons}</span>
+                <span className="sidebar-stat-label">lessons</span>
+              </div>
+              <div>
+                <span className="sidebar-stat-value">{progressPercent}%</span>
+                <span className="sidebar-stat-label">complete</span>
+              </div>
+            </div>
+          </div>
+
           <h2 className="sidebar-title">Lessons</h2>
 
           <ul className="lesson-list">
@@ -135,15 +155,22 @@ export default function ModulePage({ moduleTitle, moduleNumber, lessons, backPat
                       'lesson-list-item',
                       index === activeIndex ? 'active' : '',
                       locked ? 'locked' : '',
+                      completed ? 'completed' : '',
                     ].join(' ')}
                     onClick={() => {
                       if (!locked) goTo(index)
                     }}
                     disabled={locked}
                   >
-                    <div className="lesson-list-icon">{locked ? '🔒' : completed ? '✅' : '○'}</div>
+                    <div className={['lesson-list-icon', locked ? 'locked' : completed ? 'completed' : 'open'].join(' ')}>
+                      <span />
+                    </div>
 
-                    <div>
+                    <div className="lesson-list-copy">
+                      <div className="lesson-list-topline">
+                        <span className="lesson-list-step">Lesson {index + 1}</span>
+                        <span className="lesson-list-type">{lessonTypeLabel[lesson.type]}</span>
+                      </div>
                       <div className="lesson-list-title">{lesson.title}</div>
                       <div className="lesson-list-meta">{lesson.duration}</div>
                     </div>
@@ -155,7 +182,17 @@ export default function ModulePage({ moduleTitle, moduleNumber, lessons, backPat
         </aside>
 
         <section className="lesson-content">
-          <div className="lesson-body">{activeLesson.content}</div>
+          <div className="lesson-content-shell">
+            <div className="lesson-content-hero">
+              <div>
+                <div className="lesson-content-kicker">{lessonTypeLabel[activeLesson.type]}</div>
+                <h1 className="lesson-content-title">{activeLesson.title}</h1>
+              </div>
+              <div className="lesson-content-chip">{activeLesson.duration}</div>
+            </div>
+
+            <div className="lesson-body">{activeLesson.content}</div>
+          </div>
 
           <div className="lesson-nav">
             <button
@@ -167,26 +204,17 @@ export default function ModulePage({ moduleTitle, moduleNumber, lessons, backPat
               Previous
             </button>
 
-            {isLast ? (
-              modulePassed ? (
-                <button
-                  type="button"
-                  className="nav-btn nav-btn-primary"
-                  onClick={() => navigate('/course')}
-                >
-                  Finish module
-                </button>
-              ) : (
-                <button type="button" className="nav-btn nav-btn-primary" onClick={markCompletedAndNext}>
-                  Mark Complete
-                </button>
-              )
-            ) : (
+            {!isLast && (
               <button type="button" className="nav-btn nav-btn-primary" onClick={markCompletedAndNext}>
                 Next
               </button>
             )}
 
+            {isLast && modulePassed && (
+              <button type="button" className="nav-btn nav-btn-primary" onClick={() => navigate('/course')}>
+                Finish module
+              </button>
+            )}
           </div>
         </section>
       </main>
