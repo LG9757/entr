@@ -153,6 +153,13 @@ export async function enrollInCourse(courseSlug: string) {
   })
 }
 
+export async function unenrollFromCourse(courseSlug: string) {
+  return apiFetch<{ courseSlug: string; hasAccess: boolean }>(`/courses/${courseSlug}/unenroll`, {
+    method: 'POST',
+    body: JSON.stringify({}),
+  })
+}
+
 export async function completeLesson(courseSlug: string, moduleNumber: number, lessonId: number) {
   return apiFetch<CourseProgressResponse>(`/courses/${courseSlug}/lessons/${lessonId}/complete`, {
     method: 'POST',

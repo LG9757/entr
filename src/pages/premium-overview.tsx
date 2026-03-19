@@ -2,12 +2,13 @@ import { useEffect, useState } from 'react'
 import '../App.css'
 import { useNavigate } from 'react-router-dom'
 import AppHeader from '../components/AppHeader'
-import { getAuthToken, getCourseAccess } from '../lib/api'
+import { getAuthToken, getCourseAccess, unenrollFromCourse } from '../lib/api'
 import { premiumCourse } from '../lib/premiumCourse'
 
 export default function PremiumOverview() {
   const navigate = useNavigate()
   const [enrolled, setEnrolled] = useState(false)
+  const [isResetting, setIsResetting] = useState(false)
 
   useEffect(() => {
     if (!getAuthToken()) {
@@ -54,6 +55,23 @@ export default function PremiumOverview() {
             <button className="premium-secondary-btn" onClick={() => navigate('/premium-course/curriculum')}>
               View Curriculum
             </button>
+            {enrolled && (
+              <button
+                className="premium-secondary-btn premium-dev-btn"
+                onClick={async () => {
+                  setIsResetting(true)
+                  try {
+                    await unenrollFromCourse(premiumCourse.slug)
+                    setEnrolled(false)
+                  } finally {
+                    setIsResetting(false)
+                  }
+                }}
+                disabled={isResetting}
+              >
+                {isResetting ? 'Resetting access...' : 'Dev: Reset Access'}
+              </button>
+            )}
           </div>
 
           <div className="premium-stat-row">

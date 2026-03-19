@@ -87,9 +87,43 @@ export default function Home() {
               </div>
             </div>
           </div>
+
+          {premiumEnrolled && (
+            <div className="course-card">
+              <div className="course-icon secondary">
+                <span className="course-icon-text">AI</span>
+              </div>
+
+              <div className="course-content">
+                <div className="course-header-row">
+                  <h3 className="course-title">Real vs AI: Master the Art of Detection</h3>
+                  <span className="badge enrolled">Enrolled</span>
+                </div>
+
+                <p className="course-description">
+                  A broader programme covering text, image, video, and audio authenticity across consumer and professional
+                  settings.
+                </p>
+
+                <div className="course-meta-row">
+                  <span>4.9/5 rating</span>
+                  <span>980 learners</span>
+                  <span>12+ hours</span>
+                  <span>69 lessons</span>
+                </div>
+
+                <div className="course-actions">
+                  <button className="primary-button" onClick={() => navigate('/premium-course')}>
+                    Open Course
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </section>
 
-        <section className="dashboard-section">
+        {!premiumEnrolled && (
+          <section className="dashboard-section">
           <h2 className="dashboard-section-title">Other Courses</h2>
 
           <div className="course-card">
@@ -124,7 +158,8 @@ export default function Home() {
               </div>
             </div>
           </div>
-        </section>
+          </section>
+        )}
       </main>
     </div>
   )

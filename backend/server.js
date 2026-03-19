@@ -416,6 +416,41 @@ const server = createServer(async (req, res) => {
       return
     }
 
+    const unenrollMatch = pathname.match(/^\/courses\/([^/]+)\/unenroll$/)
+    if (req.method === 'POST' && unenrollMatch) {
+      const user = getAuthenticatedUser(req, store)
+      if (!user) {
+        unauthorized(res)
+        return
+      }
+
+      const courseSlug = unenrollMatch[1]
+      const course = catalog[courseSlug]
+      if (!course) {
+        notFound(res)
+        return
+      }
+
+      store.enrollments = store.enrollments.filter(
+        enrollment => !(enrollment.userId === user.id && enrollment.courseSlug === courseSlug)
+      )
+
+      store.lessonProgress = store.lessonProgress.filter(
+        entry => !(entry.userId === user.id && entry.courseSlug === courseSlug)
+      )
+
+      store.moduleProgress = store.moduleProgress.filter(
+        entry => !(entry.userId === user.id && entry.courseSlug === courseSlug)
+      )
+
+      writeStore(store)
+      json(res, 200, {
+        courseSlug,
+        hasAccess: false,
+      })
+      return
+    }
+
     const lessonCompleteMatch = pathname.match(/^\/courses\/([^/]+)\/lessons\/([^/]+)\/complete$/)
     if (req.method === 'POST' && lessonCompleteMatch) {
       const user = getAuthenticatedUser(req, store)
