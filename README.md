@@ -44,6 +44,30 @@ npm run server
 npm run build
 ```
 
+## Hosting on GitHub Pages
+
+GitHub Pages can host the frontend only.
+
+This project now includes a GitHub Actions workflow at [`.github/workflows/deploy.yml`](/C:/uni/entr/.github/workflows/deploy.yml) that builds the Vite app and deploys `dist` to Pages whenever you push to `main`.
+
+Before using it:
+- make sure your GitHub repo name is `entr`
+- if your repo has a different name, change `VITE_BASE_PATH` in [`.github/workflows/deploy.yml`](/C:/uni/entr/.github/workflows/deploy.yml) from `/entr/` to `/<your-repo-name>/`
+- add a GitHub repository variable called `VITE_API_URL` that points to your hosted backend API
+
+Important:
+- GitHub Pages does not run `backend/server.js`
+- your backend must be hosted separately on something like Render, Railway, or another Node host
+- once the backend is hosted, set `VITE_API_URL` in GitHub so the frontend knows where to send auth/progress requests
+
+Typical flow:
+1. Push the repo to GitHub
+2. In GitHub, go to `Settings > Pages`
+3. Set the source to `GitHub Actions`
+4. Add the `VITE_API_URL` repository variable
+5. Push to `main`
+6. Wait for the deploy workflow to finish
+
 ## Project structure
 
 Frontend:
