@@ -1,73 +1,112 @@
-# React + TypeScript + Vite
+# entr
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+`entr` is a React + Vite learning platform prototype.
 
-Currently, two official plugins are available:
+It currently includes:
+- a course dashboard
+- a finance course with module and lesson progress
+- a premium course flow with overview, curriculum, and mock payment
+- a simple backend prototype for auth, course access, and progress tracking
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+This is still a prototype, so some parts are intentionally lightweight, but the structure is now good enough to build on properly.
 
-## React Compiler
+## Running the project
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+You need two terminals.
 
-## Expanding the ESLint configuration
+Terminal 1: start the backend
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```powershell
+cd C:\uni\entr
+npm run server
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+The backend runs on:
+- `http://localhost:4010`
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Terminal 2: start the frontend
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```powershell
+cd C:\uni\entr
+npm run dev
 ```
+
+The frontend usually runs on:
+- `http://localhost:5173`
+
+Open the frontend URL in your browser, not the backend one.
+
+## Useful scripts
+
+```powershell
+npm run dev
+npm run server
+npm run build
+```
+
+## Project structure
+
+Frontend:
+- [`src/pages`](/C:/uni/entr/src/pages) page-level screens
+- [`src/components`](/C:/uni/entr/src/components) shared UI pieces
+- [`src/lib/api.ts`](/C:/uni/entr/src/lib/api.ts) frontend API client
+- [`src/lib/courseProgress.ts`](/C:/uni/entr/src/lib/courseProgress.ts) finance course metadata
+- [`src/lib/premiumCourse.ts`](/C:/uni/entr/src/lib/premiumCourse.ts) premium course metadata
+- [`src/App.css`](/C:/uni/entr/src/App.css) shared styling
+
+Backend:
+- [`backend/server.js`](/C:/uni/entr/backend/server.js) backend prototype server
+- [`backend/schema.sql`](/C:/uni/entr/backend/schema.sql) suggested database schema
+- [`backend/data/store.json`](/C:/uni/entr/backend/data/store.json) local prototype data store
+
+## What is stored where
+
+Right now:
+- auth, enrollments, and progress are handled by the backend prototype
+- some local storage is still used as a fallback while the frontend is being migrated
+
+The long-term direction should be:
+- backend/database as the source of truth
+- local storage only for temporary UI support, or not at all
+
+## Where to change things
+
+If you want to add or edit lessons:
+- update the module files in [`src/pages`](/C:/uni/entr/src/pages)
+
+If you want to change access rules or progress logic:
+- start with [`src/components/ModulePage.tsx`](/C:/uni/entr/src/components/ModulePage.tsx)
+- then check [`src/pages/course.tsx`](/C:/uni/entr/src/pages/course.tsx)
+- then check [`backend/server.js`](/C:/uni/entr/backend/server.js)
+
+If you want to change login or API behavior:
+- frontend calls live in [`src/lib/api.ts`](/C:/uni/entr/src/lib/api.ts)
+- backend endpoints live in [`backend/server.js`](/C:/uni/entr/backend/server.js)
+
+## Notes
+
+- `backend/data/*.json` is ignored by git, so local user data should not be committed
+- the backend is a prototype, not a production-ready auth system
+- if a port is already in use, change it with an environment variable before running
+
+Example:
+
+```powershell
+$env:PORT=4020
+npm run server
+```
+
+and in the frontend terminal:
+
+```powershell
+$env:VITE_API_URL="http://localhost:4020"
+npm run dev
+```
+
+## Good next steps
+
+If you keep developing this project, the next sensible improvements are:
+- move fully off local storage for course progress
+- replace the file-backed backend store with Postgres
+- add proper auth/session handling
+- connect the payment flow to real enrollment logic
