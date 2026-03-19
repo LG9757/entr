@@ -6,6 +6,8 @@ export type ModuleSummary = {
   duration: string
 }
 
+export const financeCourseSlug = 'recognising-ai-content-in-finance'
+
 export const moduleSummaries: ModuleSummary[] = [
   { number: 1, title: 'Introduction to AI in Finance', path: '/course/module-1', lessons: 10, duration: '2 hr 5 min' },
   { number: 2, title: 'Detecting AI-Generated Reports', path: '/course/module-2', lessons: 8, duration: '1 hr 29 min' },

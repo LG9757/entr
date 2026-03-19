@@ -1,19 +1,53 @@
+import { useEffect, useState } from 'react'
 import '../App.css'
 import { useNavigate } from 'react-router-dom'
 import AppHeader from '../components/AppHeader'
-import { getPremiumEnrollment } from '../lib/premiumCourse'
+import { clearAuthSession, getAuthToken, getCourseAccess, getStoredUser } from '../lib/api'
+import { premiumCourse } from '../lib/premiumCourse'
 
 export default function Home() {
   const navigate = useNavigate()
-  const premiumEnrolled = getPremiumEnrollment()
+  const [premiumEnrolled, setPremiumEnrolled] = useState(false)
+  const user = getStoredUser()
+
+  useEffect(() => {
+    if (!getAuthToken()) {
+      navigate('/')
+      return
+    }
+
+    let cancelled = false
+
+    getCourseAccess(premiumCourse.slug)
+      .then(result => {
+        if (!cancelled) {
+          setPremiumEnrolled(result.hasAccess)
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setPremiumEnrolled(false)
+        }
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [navigate])
 
   return (
     <div className="dashboard-root">
       <AppHeader
         title="My Learning Dashboard"
-        subtitle="Your enrolled courses, premium options, and latest progress in one place."
+        subtitle={user ? `Signed in as ${user.name}. Your enrolled courses, premium options, and latest progress live here.` : 'Your enrolled courses, premium options, and latest progress in one place.'}
         rightSlot={
-          <button className="logout-button" onClick={() => navigate('/')}>
+          <button
+            className="logout-button"
+            onClick={() => {
+              clearAuthSession()
+              navigate('/')
+            }}
+          >
             Logout
           </button>
         }

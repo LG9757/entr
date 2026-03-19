@@ -1,5 +1,7 @@
 import { useEffect, useId, useState } from 'react'
 import ModulePage, { type Lesson } from '../components/ModulePage'
+import { passModule } from '../lib/api'
+import { financeCourseSlug } from '../lib/courseProgress'
 
 type MCQOption = { id: string; label: string }
 
@@ -79,10 +81,12 @@ function Module1Assessment({
   passPercent = 90,
   questions,
   moduleNumber,
+  courseSlug,
 }: {
   passPercent?: number
   questions: AssessQuestion[]
   moduleNumber: number
+  courseSlug: string
 }) {
   const [answers, setAnswers] = useState<Record<string, string | null>>(() =>
     Object.fromEntries(questions.map(q => [q.id, null]))
@@ -112,8 +116,11 @@ function Module1Assessment({
   useEffect(() => {
     if (submitted && passed) {
       window.localStorage.setItem(passKey, 'true')
+      void passModule(courseSlug, moduleNumber).catch(() => {
+        // Keep local completion if backend sync fails.
+      })
     }
-  }, [submitted, passed, passKey])
+  }, [courseSlug, moduleNumber, submitted, passed, passKey])
 
 
 
@@ -761,6 +768,7 @@ const lessons: Lesson[] = [
 
     <Module1Assessment
       moduleNumber={1}
+      courseSlug={financeCourseSlug}
       passPercent={90}
       questions={[
         {
@@ -1017,6 +1025,7 @@ export default function Module1() {
       moduleNumber={1}
       lessons={lessons}
       backPath="/course"
+      courseSlug={financeCourseSlug}
     />
   )
 }

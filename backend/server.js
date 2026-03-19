@@ -200,6 +200,12 @@ function getCourseProgress(store, userId, courseSlug) {
     totalLessons: course.modules.reduce((sum, module) => sum + module.lessons, 0),
     passedModules: passedModuleNumbers.size,
     totalModules: course.modules.length,
+    lessonProgress: store.lessonProgress
+      .filter(entry => entry.userId === userId && entry.courseSlug === courseSlug)
+      .map(entry => ({
+        moduleNumber: entry.moduleNumber,
+        lessonId: entry.lessonId,
+      })),
     modules,
   }
 }
@@ -496,6 +502,49 @@ const server = createServer(async (req, res) => {
       return
     }
 
+    const moduleResetMatch = pathname.match(/^\/courses\/([^/]+)\/modules\/([^/]+)\/reset-progress$/)
+    if (req.method === 'POST' && moduleResetMatch) {
+      const user = getAuthenticatedUser(req, store)
+      if (!user) {
+        unauthorized(res)
+        return
+      }
+
+      const courseSlug = moduleResetMatch[1]
+      const moduleNumber = Number(moduleResetMatch[2])
+      if (!getEnrollment(store, user.id, courseSlug)) {
+        unauthorized(res)
+        return
+      }
+
+      if (!Number.isFinite(moduleNumber)) {
+        badRequest(res, 'moduleNumber must be a number')
+        return
+      }
+
+      store.lessonProgress = store.lessonProgress.filter(
+        entry =>
+          !(
+            entry.userId === user.id &&
+            entry.courseSlug === courseSlug &&
+            entry.moduleNumber >= moduleNumber
+          )
+      )
+
+      store.moduleProgress = store.moduleProgress.filter(
+        entry =>
+          !(
+            entry.userId === user.id &&
+            entry.courseSlug === courseSlug &&
+            entry.moduleNumber >= moduleNumber
+          )
+      )
+
+      writeStore(store)
+      json(res, 200, getCourseProgress(store, user.id, courseSlug))
+      return
+    }
+
     notFound(res)
   } catch (error) {
     json(res, 500, {
@@ -504,7 +553,7 @@ const server = createServer(async (req, res) => {
   }
 })
 
-const port = process.env.PORT || 4000
+const port = process.env.PORT || 4010
 server.listen(port, () => {
   console.log(`Backend prototype listening on http://localhost:${port}`)
 })

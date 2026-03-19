@@ -1,14 +1,32 @@
+import { useState } from 'react'
 import '../App.css'
 import { useNavigate } from 'react-router-dom'
 import AppHeader from '../components/AppHeader'
-import { premiumCourse, setPremiumEnrollment } from '../lib/premiumCourse'
+import { enrollInCourse, getAuthToken } from '../lib/api'
+import { premiumCourse } from '../lib/premiumCourse'
 
 export default function PremiumPayment() {
   const navigate = useNavigate()
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [error, setError] = useState('')
 
-  const completePayment = () => {
-    setPremiumEnrollment(true)
-    navigate('/home')
+  const completePayment = async () => {
+    if (!getAuthToken()) {
+      navigate('/')
+      return
+    }
+
+    setIsSubmitting(true)
+    setError('')
+
+    try {
+      await enrollInCourse(premiumCourse.slug)
+      navigate('/home')
+    } catch (requestError) {
+      setError(requestError instanceof Error ? requestError.message : 'Payment could not be completed')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -32,15 +50,15 @@ export default function PremiumPayment() {
 
           <div className="payment-line-item">
             <span>Course Price</span>
-            <span>£{premiumCourse.price}.00</span>
+            <span>GBP {premiumCourse.price}.00</span>
           </div>
           <div className="payment-line-item">
             <span>Tax</span>
-            <span>£0.00</span>
+            <span>GBP 0.00</span>
           </div>
           <div className="payment-line-item payment-line-total">
             <span>Total</span>
-            <span>£{premiumCourse.price}.00</span>
+            <span>GBP {premiumCourse.price}.00</span>
           </div>
 
           <div className="payment-includes-box">
@@ -83,8 +101,10 @@ export default function PremiumPayment() {
           </div>
 
           <button className="payment-submit-btn" onClick={completePayment}>
-            Complete Payment - £{premiumCourse.price}.00
+            {isSubmitting ? 'Processing...' : `Complete Payment - GBP ${premiumCourse.price}.00`}
           </button>
+
+          {error && <p className="error-message">{error}</p>}
 
           <p className="payment-terms">
             By completing your purchase, you agree to our Terms of Service and Privacy Policy

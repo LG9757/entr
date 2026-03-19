@@ -1,11 +1,33 @@
+import { useEffect, useState } from 'react'
 import '../App.css'
 import { useNavigate } from 'react-router-dom'
 import AppHeader from '../components/AppHeader'
-import { getPremiumEnrollment, premiumCourse } from '../lib/premiumCourse'
+import { getAuthToken, getCourseAccess } from '../lib/api'
+import { premiumCourse } from '../lib/premiumCourse'
 
 export default function PremiumOverview() {
   const navigate = useNavigate()
-  const enrolled = getPremiumEnrollment()
+  const [enrolled, setEnrolled] = useState(false)
+
+  useEffect(() => {
+    if (!getAuthToken()) {
+      navigate('/')
+      return
+    }
+
+    let cancelled = false
+    getCourseAccess(premiumCourse.slug)
+      .then(result => {
+        if (!cancelled) setEnrolled(result.hasAccess)
+      })
+      .catch(() => {
+        if (!cancelled) setEnrolled(false)
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [navigate])
 
   return (
     <div className="premium-page-root">
@@ -23,8 +45,11 @@ export default function PremiumOverview() {
           <p className="premium-subtitle">{premiumCourse.subtitle}</p>
 
           <div className="premium-cta-row">
-            <button className="premium-primary-btn" onClick={() => navigate('/premium-course/payment')}>
-              {enrolled ? 'Manage Enrolment' : 'Enroll Now'}
+            <button
+              className="premium-primary-btn"
+              onClick={() => navigate(enrolled ? '/home' : '/premium-course/payment')}
+            >
+              {enrolled ? 'Go to Dashboard' : 'Enroll Now'}
             </button>
             <button className="premium-secondary-btn" onClick={() => navigate('/premium-course/curriculum')}>
               View Curriculum

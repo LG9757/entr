@@ -1,5 +1,3 @@
-export const premiumEnrollmentKey = 'premium-course:enrolled'
-
 export const premiumCourse = {
   slug: 'real-vs-ai',
   title: 'Real vs AI: Master the Art of Detection',
@@ -113,23 +111,3 @@ export const premiumCurriculum = [
     ],
   },
 ]
-
-export function getPremiumEnrollment() {
-  if (typeof window === 'undefined') return false
-
-  try {
-    return window.localStorage.getItem(premiumEnrollmentKey) === 'true'
-  } catch {
-    return false
-  }
-}
-
-export function setPremiumEnrollment(value: boolean) {
-  if (typeof window === 'undefined') return
-
-  try {
-    window.localStorage.setItem(premiumEnrollmentKey, value ? 'true' : 'false')
-  } catch {
-    // Ignore storage failures.
-  }
-}

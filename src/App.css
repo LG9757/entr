@@ -780,6 +780,25 @@ button[type="submit"]:hover {
   letter-spacing: 0.12em;
   color: #8b5cf6;
 }
+.dev-reset-button {
+  width: 100%;
+  margin-top: 1rem;
+  padding: 0.75rem 0.9rem;
+  border-radius: 0.9rem;
+  border: 1px dashed #d8b4fe;
+  background: #fff;
+  color: #7e22ce;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+.dev-reset-button:hover:not(:disabled) {
+  background: #faf5ff;
+}
+.dev-reset-button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
 
 .lesson-list { list-style: none; margin: 0; padding: 0; }
 .lesson-list-item {
@@ -814,6 +833,8 @@ button[type="submit"]:hover {
 }
 .lesson-list-item.completed:not(.active) {
   border-color: #ddd6fe;
+  background: #faf7ff;
+  box-shadow: inset 0 0 0 1px rgba(168, 85, 247, 0.08);
 }
 .lesson-list-item.locked, .lesson-list-item:disabled { opacity: 0.6; cursor: default; }
 
@@ -833,10 +854,21 @@ button[type="submit"]:hover {
   height: 0.65rem;
   border-radius: 999px;
   background: currentColor;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.82rem;
+  font-weight: 800;
+  line-height: 1;
 }
 .lesson-list-icon.open { color: #7e22ce; background: #f3e8ff; }
 .lesson-list-icon.completed { color: #4f46e5; background: #eef2ff; }
 .lesson-list-icon.locked { color: #94a3b8; background: #f8fafc; }
+.lesson-list-icon.completed span {
+  width: auto;
+  height: auto;
+  background: transparent;
+}
 .lesson-list-copy { min-width: 0; }
 .lesson-list-topline {
   display: flex;
@@ -997,6 +1029,12 @@ button[type="submit"]:hover {
   margin-top: 1.5rem;
   border-top: 1px solid rgba(148, 163, 184, 0.18);
 }
+.lesson-nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+}
 
 .nav-btn {
   padding: 0.75rem 1.75rem;
@@ -1021,6 +1059,14 @@ button[type="submit"]:hover {
 .nav-btn-primary:hover:not(:disabled) {
   background: linear-gradient(135deg, #a855f7, var(--theme-accent));
   box-shadow: 0 4px 12px rgba(126, 34, 206, 0.45);
+}
+.nav-btn-done {
+  background: #eef2ff;
+  color: #4f46e5;
+  border: 1px solid #c7d2fe;
+}
+.nav-btn-done:hover:not(:disabled) {
+  background: #e0e7ff;
 }
 
 /* =========================================================

@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import '../App.css'
 import AppHeader from './AppHeader'
+import { completeLesson, getCourseProgress, resetModuleProgress } from '../lib/api'
 
 export type LessonStatus = 'completed' | 'current' | 'locked'
 export type LessonType = 'video' | 'article' | 'quiz'
@@ -20,6 +21,7 @@ type ModulePageProps = {
   moduleNumber: number
   lessons: Lesson[]
   backPath: string
+  courseSlug: string
 }
 
 const storageKey = (moduleNumber: number) => `course:module:${moduleNumber}:completedIds`
@@ -30,45 +32,112 @@ const lessonTypeLabel: Record<LessonType, string> = {
   quiz: 'Knowledge check',
 }
 
-export default function ModulePage({ moduleTitle, moduleNumber, lessons, backPath }: ModulePageProps) {
+export default function ModulePage({ moduleTitle, moduleNumber, lessons, backPath, courseSlug }: ModulePageProps) {
   const navigate = useNavigate()
   const [activeIndex, setActiveIndex] = useState(0)
+  const [completedIds, setCompletedIds] = useState<number[]>([])
+  const [modulePassed, setModulePassed] = useState(false)
+  const [isResetting, setIsResetting] = useState(false)
 
-  const defaultCompleted = useMemo(
-    () => lessons.filter(lesson => lesson.status === 'completed').map(lesson => lesson.id),
-    [lessons]
-  )
+  const finalLessonId = lessons[lessons.length - 1]?.id
+  const totalLessons = lessons.length
+  const activeLesson = lessons[activeIndex]
+  const isLast = activeIndex === lessons.length - 1
 
-  const [completedIds, setCompletedIds] = useState<number[]>(() => {
+  useEffect(() => {
     try {
       const raw = window.localStorage.getItem(storageKey(moduleNumber))
-      if (!raw) return defaultCompleted
+      if (!raw) return
       const parsed = JSON.parse(raw)
-      return Array.isArray(parsed) ? parsed : defaultCompleted
+      if (Array.isArray(parsed)) {
+        setCompletedIds(parsed.filter((value): value is number => typeof value === 'number'))
+      }
     } catch {
-      return defaultCompleted
+      setCompletedIds([])
     }
-  })
+  }, [moduleNumber])
+
+  useEffect(() => {
+    let cancelled = false
+
+    void getCourseProgress(courseSlug)
+      .then(progress => {
+        if (cancelled) return
+
+        const backendLessonIds = progress.lessonProgress
+          .filter(entry => entry.moduleNumber === moduleNumber)
+          .map(entry => entry.lessonId)
+
+        const passed = progress.modules.find(module => module.moduleNumber === moduleNumber)?.passed ?? false
+        const localLessonIds = (() => {
+          try {
+            const raw = window.localStorage.getItem(storageKey(moduleNumber))
+            const parsed = raw ? JSON.parse(raw) : []
+            return Array.isArray(parsed) ? parsed.filter((value): value is number => typeof value === 'number') : []
+          } catch {
+            return []
+          }
+        })()
+
+        const mergedLessonIds = Array.from(new Set([...localLessonIds, ...backendLessonIds]))
+
+        setCompletedIds(passed ? lessons.map(lesson => lesson.id) : mergedLessonIds)
+        setModulePassed(passed)
+
+        if (!passed) {
+          const backendLessonSet = new Set(backendLessonIds)
+          mergedLessonIds
+            .filter(lessonId => !backendLessonSet.has(lessonId))
+            .forEach(lessonId => {
+              void completeLesson(courseSlug, moduleNumber, lessonId).catch(() => {
+                // Ignore background re-sync failures.
+              })
+            })
+        }
+      })
+      .catch(() => {
+        try {
+          setModulePassed(window.localStorage.getItem(`course:module:${moduleNumber}:passed`) === 'true')
+        } catch {
+          setModulePassed(false)
+        }
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [courseSlug, lessons, moduleNumber])
 
   useEffect(() => {
     try {
       window.localStorage.setItem(storageKey(moduleNumber), JSON.stringify(completedIds))
     } catch {
-      // Ignore storage failures such as private mode restrictions.
+      // Ignore storage failures.
     }
   }, [completedIds, moduleNumber])
 
-  const totalLessons = lessons.length
-  const activeLesson = lessons[activeIndex]
-  const completedCount = completedIds.length
-  const isLast = activeIndex === lessons.length - 1
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(`course:module:${moduleNumber}:passed`, modulePassed ? 'true' : 'false')
+    } catch {
+      // Ignore storage failures.
+    }
+  }, [moduleNumber, modulePassed])
+
+  const visibleCompletedIds = useMemo(() => {
+    if (!finalLessonId || modulePassed) return completedIds
+    return completedIds.filter(id => id !== finalLessonId)
+  }, [completedIds, finalLessonId, modulePassed])
+
+  const completedCount = visibleCompletedIds.length
   const progressPercent = totalLessons === 0 ? 0 : Math.round((completedCount / totalLessons) * 100)
+  const activeLessonCompleted = visibleCompletedIds.includes(activeLesson.id)
 
   const isAccessible = (index: number) => {
     if (index <= 0) return true
     const lessonId = lessons[index]?.id
     const previousLessonId = lessons[index - 1]?.id
-    return completedIds.includes(lessonId) || completedIds.includes(previousLessonId)
+    return visibleCompletedIds.includes(lessonId) || visibleCompletedIds.includes(previousLessonId)
   }
 
   const goTo = (index: number) => {
@@ -78,27 +147,43 @@ export default function ModulePage({ moduleTitle, moduleNumber, lessons, backPat
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
+  const syncCompletedLesson = (lessonId: number) => {
+    setCompletedIds(previous => (previous.includes(lessonId) ? previous : [...previous, lessonId]))
+    void completeLesson(courseSlug, moduleNumber, lessonId).catch(() => {
+      // Keep local progress if backend sync is unavailable.
+    })
+  }
+
+  const markCompleted = () => {
+    if (isLast && !modulePassed) return
+    syncCompletedLesson(activeLesson.id)
+  }
+
   const markCompletedAndNext = () => {
-    setCompletedIds(previous => (previous.includes(activeLesson.id) ? previous : [...previous, activeLesson.id]))
+    syncCompletedLesson(activeLesson.id)
     if (!isLast) goTo(activeIndex + 1)
   }
 
-  const passedKey = `course:module:${moduleNumber}:passed`
-  const [modulePassed, setModulePassed] = useState(() => {
-    try {
-      return window.localStorage.getItem(passedKey) === 'true'
-    } catch {
-      return false
-    }
-  })
+  const handleResetProgress = async () => {
+    setIsResetting(true)
 
-  useEffect(() => {
     try {
-      setModulePassed(window.localStorage.getItem(passedKey) === 'true')
+      await resetModuleProgress(courseSlug, moduleNumber)
     } catch {
+      // Ignore backend reset failures and still clear local state for development.
+    } finally {
+      setCompletedIds([])
       setModulePassed(false)
+      setActiveIndex(0)
+      try {
+        window.localStorage.removeItem(storageKey(moduleNumber))
+        window.localStorage.removeItem(`course:module:${moduleNumber}:passed`)
+      } catch {
+        // Ignore storage failures.
+      }
+      setIsResetting(false)
     }
-  }, [activeIndex, moduleNumber, passedKey])
+  }
 
   return (
     <div className="lesson-page-root">
@@ -135,6 +220,10 @@ export default function ModulePage({ moduleTitle, moduleNumber, lessons, backPat
                 <span className="sidebar-stat-label">complete</span>
               </div>
             </div>
+
+            <button type="button" className="dev-reset-button" onClick={handleResetProgress} disabled={isResetting}>
+              {isResetting ? 'Resetting progress...' : 'Dev: Reset module progress'}
+            </button>
           </div>
 
           <h2 className="sidebar-title">Lessons</h2>
@@ -142,7 +231,7 @@ export default function ModulePage({ moduleTitle, moduleNumber, lessons, backPat
           <ul className="lesson-list">
             {lessons.map((lesson, index) => {
               const locked = !isAccessible(index)
-              const completed = completedIds.includes(lesson.id)
+              const completed = visibleCompletedIds.includes(lesson.id)
 
               return (
                 <li key={lesson.id}>
@@ -160,7 +249,7 @@ export default function ModulePage({ moduleTitle, moduleNumber, lessons, backPat
                     disabled={locked}
                   >
                     <div className={['lesson-list-icon', locked ? 'locked' : completed ? 'completed' : 'open'].join(' ')}>
-                      <span />
+                      <span>{completed ? '✓' : ''}</span>
                     </div>
 
                     <div className="lesson-list-copy">
@@ -201,11 +290,26 @@ export default function ModulePage({ moduleTitle, moduleNumber, lessons, backPat
               Previous
             </button>
 
-            {!isLast && (
-              <button type="button" className="nav-btn nav-btn-primary" onClick={markCompletedAndNext}>
-                Next
+            <div className="lesson-nav-actions">
+              <button
+                type="button"
+                className={['nav-btn', activeLessonCompleted ? 'nav-btn-done' : 'nav-btn-primary'].join(' ')}
+                onClick={markCompleted}
+                disabled={activeLessonCompleted || (isLast && !modulePassed)}
+              >
+                {activeLessonCompleted
+                  ? 'Marked as done'
+                  : isLast && !modulePassed
+                    ? 'Pass assessment to finish'
+                    : 'Mark as done'}
               </button>
-            )}
+
+              {!isLast && (
+                <button type="button" className="nav-btn nav-btn-primary" onClick={markCompletedAndNext}>
+                  Next
+                </button>
+              )}
+            </div>
 
             {isLast && modulePassed && (
               <button type="button" className="nav-btn nav-btn-primary" onClick={() => navigate('/course')}>

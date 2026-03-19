@@ -1,7 +1,120 @@
 {
-  "users": [],
-  "sessions": [],
-  "enrollments": [],
-  "lessonProgress": [],
-  "moduleProgress": []
+  "users": [
+    {
+      "id": "user_a0ef314433f9c9f7",
+      "name": "Test User",
+      "email": "testuser@example.com",
+      "passwordSalt": "00e8a785076304d8de76039b228b6f75",
+      "passwordHash": "e1786c6a922aab8cef1a09c718129ff6d2d452f5e25f023bbdf97ba0e1964e9ad9974d9ff746c62a984c23168ed9520d9d19eafc4d6cef52be4a764a3dbd0282",
+      "createdAt": "2026-03-18T17:45:29.863Z"
+    },
+    {
+      "id": "user_ebd247c415e5c07c",
+      "name": "Lewis",
+      "email": "lewisgrice2005@icloud.com",
+      "passwordSalt": "740243e3fd1202bcc669b99c17ba18ea",
+      "passwordHash": "43fe0413f05a754cfe92721f18daf2bc13cc4366c582b430badf325907420c2e7024f88aa459cee22c3b7ef09f9bfe1f426ce183608bc8e923c866f455fa932e",
+      "createdAt": "2026-03-19T11:24:06.469Z"
+    }
+  ],
+  "sessions": [
+    {
+      "token": "bd63dd26949c1a7f5412444282891747d2368637fdef68b7",
+      "userId": "user_a0ef314433f9c9f7",
+      "createdAt": "2026-03-18T17:45:29.867Z"
+    },
+    {
+      "token": "56ceb4d147cb24aa74115e0c1f0e2b3af0688ce4c301dccb",
+      "userId": "user_ebd247c415e5c07c",
+      "createdAt": "2026-03-19T11:24:06.469Z"
+    },
+    {
+      "token": "50b16a227556b393ea7ae1d9c50fad083c39ab3e90b71cda",
+      "userId": "user_ebd247c415e5c07c",
+      "createdAt": "2026-03-19T11:47:39.114Z"
+    }
+  ],
+  "enrollments": [
+    {
+      "id": "enrollment_3807aec37efdce7f",
+      "userId": "user_a0ef314433f9c9f7",
+      "courseSlug": "recognising-ai-content-in-finance",
+      "status": "active",
+      "purchasedAt": "2026-03-18T17:45:29.867Z"
+    },
+    {
+      "id": "enrollment_e73c04929ca6d403",
+      "userId": "user_ebd247c415e5c07c",
+      "courseSlug": "recognising-ai-content-in-finance",
+      "status": "active",
+      "purchasedAt": "2026-03-19T11:24:06.469Z"
+    }
+  ],
+  "lessonProgress": [
+    {
+      "id": "lesson_progress_86de6f92d7eb29a5",
+      "userId": "user_ebd247c415e5c07c",
+      "courseSlug": "recognising-ai-content-in-finance",
+      "moduleNumber": 1,
+      "lessonId": 1,
+      "completedAt": "2026-03-19T11:24:30.144Z"
+    },
+    {
+      "id": "lesson_progress_45836657929628eb",
+      "userId": "user_ebd247c415e5c07c",
+      "courseSlug": "recognising-ai-content-in-finance",
+      "moduleNumber": 1,
+      "lessonId": 2,
+      "completedAt": "2026-03-19T11:24:33.217Z"
+    },
+    {
+      "id": "lesson_progress_50facdafadafb923",
+      "userId": "user_ebd247c415e5c07c",
+      "courseSlug": "recognising-ai-content-in-finance",
+      "moduleNumber": 1,
+      "lessonId": 3,
+      "completedAt": "2026-03-19T11:24:35.453Z"
+    },
+    {
+      "id": "lesson_progress_44e855d757b3e89e",
+      "userId": "user_ebd247c415e5c07c",
+      "courseSlug": "recognising-ai-content-in-finance",
+      "moduleNumber": 2,
+      "lessonId": 1,
+      "completedAt": "2026-03-19T11:42:29.416Z"
+    },
+    {
+      "id": "lesson_progress_d8663c74b56cd685",
+      "userId": "user_ebd247c415e5c07c",
+      "courseSlug": "recognising-ai-content-in-finance",
+      "moduleNumber": 2,
+      "lessonId": 2,
+      "completedAt": "2026-03-19T11:42:35.110Z"
+    },
+    {
+      "id": "lesson_progress_14c06eddbb379467",
+      "userId": "user_ebd247c415e5c07c",
+      "courseSlug": "recognising-ai-content-in-finance",
+      "moduleNumber": 2,
+      "lessonId": 3,
+      "completedAt": "2026-03-19T11:42:42.898Z"
+    },
+    {
+      "id": "lesson_progress_24a1fbf1ff339c3a",
+      "userId": "user_ebd247c415e5c07c",
+      "courseSlug": "recognising-ai-content-in-finance",
+      "moduleNumber": 2,
+      "lessonId": 4,
+      "completedAt": "2026-03-19T11:48:00.109Z"
+    }
+  ],
+  "moduleProgress": [
+    {
+      "id": "module_progress_c31f6ebb79639786",
+      "userId": "user_ebd247c415e5c07c",
+      "courseSlug": "recognising-ai-content-in-finance",
+      "moduleNumber": 1,
+      "passedAt": "2026-03-19T11:36:38.303Z"
+    }
+  ]
 }

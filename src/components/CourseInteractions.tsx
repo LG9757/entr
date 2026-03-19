@@ -1,4 +1,5 @@
 import { useEffect, useId, useState } from 'react'
+import { passModule } from '../lib/api'
 
 type MCQOption = { id: string; label: string }
 
@@ -76,10 +77,12 @@ export type AssessmentQuestion = {
 
 export function ModuleAssessment({
   moduleNumber,
+  courseSlug,
   questions,
   passPercent,
 }: {
   moduleNumber: number
+  courseSlug: string
   questions: AssessmentQuestion[]
   passPercent: number
 }) {
@@ -115,8 +118,11 @@ export function ModuleAssessment({
   useEffect(() => {
     if (submitted && passed) {
       window.localStorage.setItem(passKey, 'true')
+      void passModule(courseSlug, moduleNumber).catch(() => {
+        // Keep local completion even if backend sync is temporarily unavailable.
+      })
     }
-  }, [passKey, passed, submitted])
+  }, [courseSlug, moduleNumber, passKey, passed, submitted])
 
   return (
     <div className="assess">

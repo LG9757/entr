@@ -1,5 +1,6 @@
 import ModulePage, { type Lesson } from '../components/ModulePage'
 import { MCQ, ModuleAssessment } from '../components/CourseInteractions'
+import { financeCourseSlug } from '../lib/courseProgress'
 
 const lessons: Lesson[] = [
   {
@@ -237,6 +238,7 @@ const lessons: Lesson[] = [
 
         <ModuleAssessment
           moduleNumber={3}
+          courseSlug={financeCourseSlug}
           passPercent={80}
           questions={[
             {
@@ -291,5 +293,13 @@ const lessons: Lesson[] = [
 ]
 
 export default function Module3() {
-  return <ModulePage moduleTitle="AI in Market Analysis" moduleNumber={3} lessons={lessons} backPath="/course" />
+  return (
+    <ModulePage
+      moduleTitle="AI in Market Analysis"
+      moduleNumber={3}
+      lessons={lessons}
+      backPath="/course"
+      courseSlug={financeCourseSlug}
+    />
+  )
 }

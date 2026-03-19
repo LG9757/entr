@@ -1,11 +1,13 @@
 import { useState } from 'react'
 import '../App.css'
 import { useNavigate } from 'react-router-dom'
+import { loginUser, registerUser, setAuthSession } from '../lib/api'
 
 export default function Login() {
   const navigate = useNavigate()
 
   const [activeTab, setActiveTab] = useState<'login' | 'signup'>('login')
+  const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -13,36 +15,43 @@ export default function Login() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [emailError, setEmailError] = useState('')
   const [passwordError, setPasswordError] = useState('')
+  const [formError, setFormError] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const validateEmail = (email: string) =>
-    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+  const validateEmail = (value: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
 
-  const validatePassword = (password: string) => {
-    const hasLetter = /[a-zA-Z]/.test(password)
-    const hasNumber = /[0-9]/.test(password)
-    const hasPunctuation = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(password)
+  const validatePassword = (value: string) => {
+    const hasLetter = /[a-zA-Z]/.test(value)
+    const hasNumber = /[0-9]/.test(value)
+    const hasPunctuation = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(value)
     if (!hasLetter || !hasNumber || !hasPunctuation) {
       return 'Password must contain a letter, a number, and punctuation'
     }
-    if (password.length < 8) {
+    if (value.length < 8) {
       return 'Password must be at least 8 characters'
     }
     return ''
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setEmailError('')
     setPasswordError('')
+    setFormError('')
+
+    if (activeTab === 'signup' && !name.trim()) {
+      setFormError('Please enter your name')
+      return
+    }
 
     if (!validateEmail(email)) {
       setEmailError('Please enter a valid email address')
       return
     }
 
-    const pwError = validatePassword(password)
-    if (pwError) {
-      setPasswordError(pwError)
+    const passwordValidation = validatePassword(password)
+    if (passwordValidation) {
+      setPasswordError(passwordValidation)
       return
     }
 
@@ -51,27 +60,21 @@ export default function Login() {
       return
     }
 
-    console.log(`${activeTab}:`, { email, password })
+    setIsSubmitting(true)
 
-    // Fake successful auth -> go to dashboard
-    navigate('/home')
-  }
+    try {
+      const authResponse =
+        activeTab === 'login'
+          ? await loginUser({ email, password })
+          : await registerUser({ name: name.trim(), email, password })
 
-  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setEmail(e.target.value)
-    if (emailError) setEmailError('')
-  }
-
-  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPassword(e.target.value)
-    if (passwordError) setPasswordError('')
-  }
-
-  const handleConfirmPasswordChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    setConfirmPassword(e.target.value)
-    if (passwordError) setPasswordError('')
+      setAuthSession(authResponse.token, authResponse.user)
+      navigate('/home')
+    } catch (error) {
+      setFormError(error instanceof Error ? error.message : 'Unable to sign in right now')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -85,31 +88,47 @@ export default function Login() {
         <div className="tab-slider">
           <button
             className={`tab-btn ${activeTab === 'login' ? 'tab-active' : ''}`}
-            onClick={() => setActiveTab('login')}
+            onClick={() => {
+              setActiveTab('login')
+              setFormError('')
+            }}
+            type="button"
           >
             Login
           </button>
           <button
             className={`tab-btn ${activeTab === 'signup' ? 'tab-active' : ''}`}
-            onClick={() => setActiveTab('signup')}
+            onClick={() => {
+              setActiveTab('signup')
+              setFormError('')
+            }}
+            type="button"
           >
             Sign up
           </button>
         </div>
 
         <form onSubmit={handleSubmit} className="form" noValidate>
+          {activeTab === 'signup' && (
+            <div className="input-group">
+              <label>Name</label>
+              <input type="text" value={name} onChange={e => setName(e.target.value)} placeholder="Jane Smith" />
+            </div>
+          )}
+
           <div className="input-group">
             <label>Email</label>
             <input
               type="email"
               value={email}
-              onChange={handleEmailChange}
+              onChange={e => {
+                setEmail(e.target.value)
+                if (emailError) setEmailError('')
+              }}
               placeholder="you@example.com"
               className={emailError ? 'input-error' : ''}
             />
-            {emailError && (
-              <span className="error-message">{emailError}</span>
-            )}
+            {emailError && <span className="error-message">{emailError}</span>}
           </div>
 
           <div className="input-group">
@@ -118,8 +137,11 @@ export default function Login() {
               <input
                 type={showPassword ? 'text' : 'password'}
                 value={password}
-                onChange={handlePasswordChange}
-                placeholder="••••••••"
+                onChange={e => {
+                  setPassword(e.target.value)
+                  if (passwordError) setPasswordError('')
+                }}
+                placeholder="Password"
                 className={passwordError ? 'input-error' : ''}
               />
               <button
@@ -128,37 +150,7 @@ export default function Login() {
                 onClick={() => setShowPassword(!showPassword)}
                 aria-label="Toggle password visibility"
               >
-                {showPassword ? (
-                  <svg
-                    width="20"
-                    height="20"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" />
-                    <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" />
-                    <path d="M14.12 14.12A3 3 0 0 1 9.88 9.88" />
-                    <line x1="1" y1="1" x2="23" y2="23" />
-                  </svg>
-                ) : (
-                  <svg
-                    width="20"
-                    height="20"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                    <circle cx="12" cy="12" r="3" />
-                  </svg>
-                )}
+                {showPassword ? 'Hide' : 'Show'}
               </button>
             </div>
           </div>
@@ -170,66 +162,34 @@ export default function Login() {
                 <input
                   type={showConfirmPassword ? 'text' : 'password'}
                   value={confirmPassword}
-                  onChange={handleConfirmPasswordChange}
-                  placeholder="••••••••"
+                  onChange={e => {
+                    setConfirmPassword(e.target.value)
+                    if (passwordError) setPasswordError('')
+                  }}
+                  placeholder="Confirm password"
                   className={passwordError ? 'input-error' : ''}
                 />
                 <button
                   type="button"
                   className="eye-btn"
-                  onClick={() =>
-                    setShowConfirmPassword(!showConfirmPassword)
-                  }
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   aria-label="Toggle confirm password visibility"
                 >
-                  {showConfirmPassword ? (
-                    <svg
-                      width="20"
-                      height="20"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" />
-                      <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" />
-                      <path d="M14.12 14.12A3 3 0 0 1 9.88 9.88" />
-                      <line x1="1" y1="1" x2="23" y2="23" />
-                    </svg>
-                  ) : (
-                    <svg
-                      width="20"
-                      height="20"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                      <circle cx="12" cy="12" r="3" />
-                    </svg>
-                  )}
+                  {showConfirmPassword ? 'Hide' : 'Show'}
                 </button>
               </div>
             </div>
           )}
 
-          {passwordError && (
-            <span className="error-message">{passwordError}</span>
-          )}
+          {passwordError && <span className="error-message">{passwordError}</span>}
+          {formError && <span className="error-message">{formError}</span>}
 
-          <button type="submit">
-            {activeTab === 'login' ? 'Login' : 'Create account'}
+          <button type="submit" disabled={isSubmitting}>
+            {isSubmitting ? 'Please wait...' : activeTab === 'login' ? 'Login' : 'Create account'}
           </button>
         </form>
 
-        <p className="forgot-password">
-          Forgot password? <a href="#">Reset it</a>
-        </p>
+        <p className="forgot-password">Use sign up to create your first account on the new backend.</p>
       </div>
     </div>
   )
