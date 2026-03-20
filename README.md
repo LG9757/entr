@@ -10,7 +10,7 @@ It currently includes:
 
 This is still a prototype, so some parts are intentionally lightweight, but the structure is now good enough to build on properly.
 
-## Running the project
+## Testing locally
 
 You need two terminals.
 
@@ -36,6 +36,13 @@ The frontend usually runs on:
 
 Open the frontend URL in your browser, not the backend one.
 
+This is enough to test the app locally, including:
+- sign up and login
+- course access
+- lesson completion
+- module unlocking
+- progress tracking
+
 ## Useful scripts
 
 ```powershell
@@ -44,29 +51,56 @@ npm run server
 npm run build
 ```
 
-## Hosting on GitHub Pages
+## Deploying globally
+
+This project is split into two parts:
+- frontend -> GitHub Pages
+- backend -> a separate Node host - Render
 
 GitHub Pages can host the frontend only.
 
-This project now includes a GitHub Actions workflow at [`.github/workflows/deploy.yml`](/C:/uni/entr/.github/workflows/deploy.yml) that builds the Vite app and deploys `dist` to Pages whenever you push to `main`.
-
-Before using it:
-- make sure your GitHub repo name is `entr`
-- if your repo has a different name, change `VITE_BASE_PATH` in [`.github/workflows/deploy.yml`](/C:/uni/entr/.github/workflows/deploy.yml) from `/entr/` to `/<your-repo-name>/`
-- add a GitHub repository variable called `VITE_API_URL` that points to your hosted backend API
-
-Important:
-- GitHub Pages does not run `backend/server.js`
-- your backend must be hosted separately on something like Render, Railway, or another Node host
-- once the backend is hosted, set `VITE_API_URL` in GitHub so the frontend knows where to send auth/progress requests
+This project includes a GitHub Actions workflow at [`.github/workflows/deploy.yml`](/C:/uni/entr/.github/workflows/deploy.yml) that builds the Vite app and deploys `dist` to Pages.
 
 Typical flow:
-1. Push the repo to GitHub
+1. Push your deployment changes to the `github-pages` branch
 2. In GitHub, go to `Settings > Pages`
 3. Set the source to `GitHub Actions`
 4. Add the `VITE_API_URL` repository variable
-5. Push to `main`
-6. Wait for the deploy workflow to finish
+5. Make sure the `github-pages` environment allows the `github-pages` branch
+6. Push to `github-pages`
+7. Wait for the deploy workflow to finish
+
+Useful deploy commands:
+
+```powershell
+git add .
+git commit -m "Your deploy message"
+git push origin github-pages
+```
+
+If you also want the same code on `main` afterwards:
+
+```powershell
+git switch main
+git merge github-pages
+git push origin main
+```
+
+## Backend deployment
+
+The backend lives in [`backend/server.js`](/C:/uni/entr/backend/server.js).
+
+A simple setup is:
+1. Deploy it to Render as a web service
+2. Build command: `npm install`
+3. Start command: `npm run server`
+4. Health check path: `/health`
+5. Copy the Render URL into the GitHub `VITE_API_URL` repository variable
+
+Once both are deployed:
+- frontend runs on GitHub Pages
+- backend runs on Render
+- login, enrollment, and progress work against the live backend
 
 ## Project structure
 
@@ -127,10 +161,9 @@ $env:VITE_API_URL="http://localhost:4020"
 npm run dev
 ```
 
-## Good next steps
+## Git notes
 
-If you keep developing this project, the next sensible improvements are:
-- move fully off local storage for course progress
-- replace the file-backed backend store with Postgres
-- add proper auth/session handling
-- connect the payment flow to real enrollment logic
+`backend/data/*.json` is ignored by git, so local test accounts and runtime data will not be committed.
+
+If you clone the repo fresh, the backend will create its local data file automatically when you run `npm run server`.
+
