@@ -1,7 +1,7 @@
 import { useEffect, useId, useState } from 'react'
 import ModulePage, { type Lesson } from '../components/ModulePage'
 import { passModule } from '../lib/api'
-import { financeCourseSlug } from '../lib/courseProgress'
+import { financeCourseSlug, getModulePassKey } from '../lib/courseProgress'
 
 type MCQOption = { id: string; label: string }
 
@@ -99,7 +99,7 @@ function Module1Assessment({
   const passed = percent >= passPercent
   const unansweredCount = questions.reduce((acc, q) => acc + (answers[q.id] ? 0 : 1), 0)
 
- const passKey = `course:module:${moduleNumber}:passed`
+ const passKey = getModulePassKey(moduleNumber)
 
   const onSubmit = () => {
     setSubmitted(true)

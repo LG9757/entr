@@ -1,3 +1,5 @@
+import { getStoredUser } from './api'
+
 export type ModuleSummary = {
   number: number
   title: string
@@ -17,8 +19,17 @@ export const moduleSummaries: ModuleSummary[] = [
   { number: 6, title: 'Case Studies and Applications', path: '/course/module-6', lessons: 7, duration: '1 hr 35 min' },
 ]
 
+function getProgressScope() {
+  const user = getStoredUser()
+  return user?.id ?? 'guest'
+}
+
 export function getModulePassKey(moduleNumber: number) {
-  return `course:module:${moduleNumber}:passed`
+  return `user:${getProgressScope()}:course:module:${moduleNumber}:passed`
+}
+
+export function getModuleLessonKey(moduleNumber: number) {
+  return `user:${getProgressScope()}:course:module:${moduleNumber}:completedIds`
 }
 
 export function getModulePassed(moduleNumber: number) {

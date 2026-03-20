@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import '../App.css'
 import { useNavigate } from 'react-router-dom'
 import AppHeader from '../components/AppHeader'
-import { getAuthToken, getCourseProgress, getStoredUser } from '../lib/api'
+import { type CourseProgressResponse, getAuthToken, getCourseProgress, getStoredUser } from '../lib/api'
 import {
   financeCourseSlug,
   getCompletedModuleCount,
@@ -19,6 +19,8 @@ type ModuleViewState = {
   path: string
   lessons: number
   duration: string
+  completedLessons: number
+  progressPercent: number
   unlocked: boolean
   completed: boolean
 }
@@ -26,6 +28,7 @@ type ModuleViewState = {
 export default function Course() {
   const navigate = useNavigate()
   const user = getStoredUser()
+  const [serverProgress, setServerProgress] = useState<CourseProgressResponse | null>(null)
   const [serverModules, setServerModules] = useState<Record<number, { unlocked: boolean; passed: boolean }> | null>(null)
 
   useEffect(() => {
@@ -50,10 +53,12 @@ export default function Course() {
           ])
         )
 
+        setServerProgress(progress)
         setServerModules(nextState)
       })
       .catch(() => {
         if (!cancelled) {
+          setServerProgress(null)
           setServerModules(null)
         }
       })
@@ -64,19 +69,38 @@ export default function Course() {
   }, [navigate])
 
   const modules: ModuleViewState[] = useMemo(
-    () =>
-      moduleSummaries.map(module => ({
-        ...module,
-        unlocked: serverModules?.[module.number]?.unlocked ?? isModuleUnlocked(module.number),
-        completed: serverModules?.[module.number]?.passed ?? getModulePassed(module.number),
-      })),
-    [serverModules]
+    () => {
+      const lessonCounts = new Map<number, number>()
+
+      serverProgress?.lessonProgress.forEach(entry => {
+        lessonCounts.set(entry.moduleNumber, (lessonCounts.get(entry.moduleNumber) ?? 0) + 1)
+      })
+
+      return moduleSummaries.map(module => {
+        const completed = serverModules?.[module.number]?.passed ?? getModulePassed(module.number)
+        const completedLessons = completed ? module.lessons : lessonCounts.get(module.number) ?? 0
+        const progressPercent = module.lessons === 0 ? 0 : Math.round((completedLessons / module.lessons) * 100)
+
+        return {
+          ...module,
+          completedLessons,
+          progressPercent,
+          unlocked: serverModules?.[module.number]?.unlocked ?? isModuleUnlocked(module.number),
+          completed,
+        }
+      })
+    },
+    [serverModules, serverProgress]
   )
 
   const completedModules = modules.filter(module => module.completed).length || getCompletedModuleCount()
   const unlockedModules = modules.filter(module => module.unlocked).length || getUnlockedModuleCount()
   const nextModule = modules.find(module => module.unlocked && !module.completed) ?? getNextUnlockedModule()
-  const completionPercent = Math.round((completedModules / moduleSummaries.length) * 100)
+  const totalLessons = moduleSummaries.reduce((sum, module) => sum + module.lessons, 0)
+  const completedLessons = serverProgress
+    ? modules.reduce((sum, module) => sum + module.completedLessons, 0)
+    : modules.reduce((sum, module) => sum + (module.completed ? module.lessons : 0), 0)
+  const completionPercent = totalLessons === 0 ? 0 : Math.round((completedLessons / totalLessons) * 100)
   const availableModules = modules.filter(module => module.unlocked)
   const lockedModules = modules.filter(module => !module.unlocked)
 
@@ -124,7 +148,7 @@ export default function Course() {
               <h3>Course Progress</h3>
               <p className="stat-number">{completionPercent}%</p>
               <p className="stat-sub">
-                {completedModules} of {moduleSummaries.length} modules passed
+                {completedLessons} of {totalLessons} lessons complete
               </p>
               <div className="overall-bar">
                 <div className="overall-bar-fill" style={{ width: `${completionPercent}%` }} />
@@ -194,11 +218,15 @@ export default function Course() {
                     </p>
 
                     <div className="module-progress module-progress-clean">
-                      <span>{module.completed ? 'Finished and passed' : isCurrent ? 'Ready to continue' : 'Available to start'}</span>
+                      <span>
+                        {module.completed
+                          ? 'Finished and passed'
+                          : `${module.completedLessons} of ${module.lessons} lessons complete`}
+                      </span>
                       <div className="module-progress-bar">
                         <div
                           className={['module-progress-fill', module.completed ? 'dark' : isCurrent ? 'current' : ''].join(' ')}
-                          style={{ width: module.completed ? '100%' : isCurrent ? '38%' : '18%' }}
+                          style={{ width: `${module.progressPercent}%` }}
                         />
                       </div>
                     </div>

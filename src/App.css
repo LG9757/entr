@@ -771,7 +771,7 @@ button[type="submit"]:hover {
 }
 .sidebar-stat-value {
   display: block;
-  font-size: 1.15rem;
+  font-size: 1.16rem;
   font-weight: 700;
   color: var(--theme-text);
 }

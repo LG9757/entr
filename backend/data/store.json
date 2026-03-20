@@ -15,6 +15,14 @@
       "passwordSalt": "740243e3fd1202bcc669b99c17ba18ea",
       "passwordHash": "43fe0413f05a754cfe92721f18daf2bc13cc4366c582b430badf325907420c2e7024f88aa459cee22c3b7ef09f9bfe1f426ce183608bc8e923c866f455fa932e",
       "createdAt": "2026-03-19T11:24:06.469Z"
+    },
+    {
+      "id": "user_5328d0681a8a4941",
+      "name": "fiebw",
+      "email": "testeremail@gmail.com",
+      "passwordSalt": "3616c11a220ed701847bc219044653d0",
+      "passwordHash": "8d61574a6a920026196d6dfe82a6fc8dd223fa48ac66ba724b2e82b89c13a53f80b1ce62afcd6b24ccc4e0e3b8a9800109b7d427fdfd0588f253dc8a39d09713",
+      "createdAt": "2026-03-20T11:39:06.891Z"
     }
   ],
   "sessions": [
@@ -52,6 +60,26 @@
       "token": "2bbf5cecc6d4b2b5fdf9926c68c3be6a31d4679cc9d18753",
       "userId": "user_ebd247c415e5c07c",
       "createdAt": "2026-03-19T12:22:30.124Z"
+    },
+    {
+      "token": "57e916d672a729ebc8ef1c48584b3c1145b6ccc6ce2517b5",
+      "userId": "user_ebd247c415e5c07c",
+      "createdAt": "2026-03-19T21:22:40.153Z"
+    },
+    {
+      "token": "844743b8d4c595faf7df18b2e2688601ca9a65e75c246bb6",
+      "userId": "user_ebd247c415e5c07c",
+      "createdAt": "2026-03-19T21:26:33.271Z"
+    },
+    {
+      "token": "7691ae41fd9f1efcb20279b8d3cfdd6ad9cd034d32be4583",
+      "userId": "user_ebd247c415e5c07c",
+      "createdAt": "2026-03-19T21:32:42.822Z"
+    },
+    {
+      "token": "59e0a9f1f27c393771cc04a0ef3e88d66c98f404914a67ca",
+      "userId": "user_5328d0681a8a4941",
+      "createdAt": "2026-03-20T11:39:06.891Z"
     }
   ],
   "enrollments": [
@@ -68,73 +96,119 @@
       "courseSlug": "recognising-ai-content-in-finance",
       "status": "active",
       "purchasedAt": "2026-03-19T11:24:06.469Z"
+    },
+    {
+      "id": "enrollment_3ea87608b65869c1",
+      "userId": "user_ebd247c415e5c07c",
+      "courseSlug": "real-vs-ai",
+      "status": "active",
+      "purchasedAt": "2026-03-19T21:33:03.501Z"
+    },
+    {
+      "id": "enrollment_4d41a32efe6635c5",
+      "userId": "user_5328d0681a8a4941",
+      "courseSlug": "recognising-ai-content-in-finance",
+      "status": "active",
+      "purchasedAt": "2026-03-20T11:39:06.891Z"
     }
   ],
   "lessonProgress": [
     {
-      "id": "lesson_progress_86de6f92d7eb29a5",
+      "id": "lesson_progress_07d7dc408dc3c112",
       "userId": "user_ebd247c415e5c07c",
       "courseSlug": "recognising-ai-content-in-finance",
       "moduleNumber": 1,
       "lessonId": 1,
-      "completedAt": "2026-03-19T11:24:30.144Z"
+      "completedAt": "2026-03-19T21:33:19.051Z"
     },
     {
-      "id": "lesson_progress_45836657929628eb",
+      "id": "lesson_progress_18c3e774e8976a5b",
       "userId": "user_ebd247c415e5c07c",
       "courseSlug": "recognising-ai-content-in-finance",
       "moduleNumber": 1,
       "lessonId": 2,
-      "completedAt": "2026-03-19T11:24:33.217Z"
+      "completedAt": "2026-03-19T21:33:26.989Z"
     },
     {
-      "id": "lesson_progress_50facdafadafb923",
+      "id": "lesson_progress_d3e5a574bb072283",
       "userId": "user_ebd247c415e5c07c",
       "courseSlug": "recognising-ai-content-in-finance",
       "moduleNumber": 1,
       "lessonId": 3,
-      "completedAt": "2026-03-19T11:24:35.453Z"
+      "completedAt": "2026-03-19T21:33:35.025Z"
     },
     {
-      "id": "lesson_progress_44e855d757b3e89e",
+      "id": "lesson_progress_d4f5df036a622638",
       "userId": "user_ebd247c415e5c07c",
       "courseSlug": "recognising-ai-content-in-finance",
-      "moduleNumber": 2,
-      "lessonId": 1,
-      "completedAt": "2026-03-19T11:42:29.416Z"
-    },
-    {
-      "id": "lesson_progress_d8663c74b56cd685",
-      "userId": "user_ebd247c415e5c07c",
-      "courseSlug": "recognising-ai-content-in-finance",
-      "moduleNumber": 2,
-      "lessonId": 2,
-      "completedAt": "2026-03-19T11:42:35.110Z"
-    },
-    {
-      "id": "lesson_progress_14c06eddbb379467",
-      "userId": "user_ebd247c415e5c07c",
-      "courseSlug": "recognising-ai-content-in-finance",
-      "moduleNumber": 2,
-      "lessonId": 3,
-      "completedAt": "2026-03-19T11:42:42.898Z"
-    },
-    {
-      "id": "lesson_progress_24a1fbf1ff339c3a",
-      "userId": "user_ebd247c415e5c07c",
-      "courseSlug": "recognising-ai-content-in-finance",
-      "moduleNumber": 2,
+      "moduleNumber": 1,
       "lessonId": 4,
-      "completedAt": "2026-03-19T11:48:00.109Z"
+      "completedAt": "2026-03-19T21:34:01.471Z"
+    },
+    {
+      "id": "lesson_progress_afdf364fead9f7ed",
+      "userId": "user_ebd247c415e5c07c",
+      "courseSlug": "recognising-ai-content-in-finance",
+      "moduleNumber": 1,
+      "lessonId": 5,
+      "completedAt": "2026-03-19T21:34:06.193Z"
+    },
+    {
+      "id": "lesson_progress_3b30521bdef3fb93",
+      "userId": "user_ebd247c415e5c07c",
+      "courseSlug": "recognising-ai-content-in-finance",
+      "moduleNumber": 1,
+      "lessonId": 6,
+      "completedAt": "2026-03-19T21:34:10.395Z"
+    },
+    {
+      "id": "lesson_progress_af249cf1a3a98fc8",
+      "userId": "user_ebd247c415e5c07c",
+      "courseSlug": "recognising-ai-content-in-finance",
+      "moduleNumber": 1,
+      "lessonId": 7,
+      "completedAt": "2026-03-19T21:34:14.599Z"
+    },
+    {
+      "id": "lesson_progress_56bcf925d450f897",
+      "userId": "user_ebd247c415e5c07c",
+      "courseSlug": "recognising-ai-content-in-finance",
+      "moduleNumber": 1,
+      "lessonId": 8,
+      "completedAt": "2026-03-19T21:34:18.858Z"
+    },
+    {
+      "id": "lesson_progress_b286733775d59754",
+      "userId": "user_ebd247c415e5c07c",
+      "courseSlug": "recognising-ai-content-in-finance",
+      "moduleNumber": 1,
+      "lessonId": 9,
+      "completedAt": "2026-03-19T21:34:37.411Z"
+    },
+    {
+      "id": "lesson_progress_bd355aaa760eda45",
+      "userId": "user_5328d0681a8a4941",
+      "courseSlug": "recognising-ai-content-in-finance",
+      "moduleNumber": 1,
+      "lessonId": 1,
+      "completedAt": "2026-03-20T11:39:15.318Z"
+    },
+    {
+      "id": "lesson_progress_74e08665d1c5d173",
+      "userId": "user_5328d0681a8a4941",
+      "courseSlug": "recognising-ai-content-in-finance",
+      "moduleNumber": 1,
+      "lessonId": 2,
+      "completedAt": "2026-03-20T11:39:18.855Z"
     }
   ],
   "moduleProgress": [
     {
-      "id": "module_progress_c31f6ebb79639786",
+      "id": "module_progress_37ddf672f4c3c0c4",
       "userId": "user_ebd247c415e5c07c",
       "courseSlug": "recognising-ai-content-in-finance",
       "moduleNumber": 1,
-      "passedAt": "2026-03-19T11:36:38.303Z"
+      "passedAt": "2026-03-19T21:36:02.980Z"
     }
   ]
 }

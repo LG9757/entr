@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import '../App.css'
 import AppHeader from './AppHeader'
 import { completeLesson, getCourseProgress, resetModuleProgress } from '../lib/api'
+import { getModuleLessonKey, getModulePassKey } from '../lib/courseProgress'
 
 export type LessonStatus = 'completed' | 'current' | 'locked'
 export type LessonType = 'video' | 'article' | 'quiz'
@@ -24,8 +25,6 @@ type ModulePageProps = {
   courseSlug: string
 }
 
-const storageKey = (moduleNumber: number) => `course:module:${moduleNumber}:completedIds`
-
 const lessonTypeLabel: Record<LessonType, string> = {
   video: 'Video lesson',
   article: 'Reading',
@@ -39,6 +38,8 @@ export default function ModulePage({ moduleTitle, moduleNumber, lessons, backPat
   const [modulePassed, setModulePassed] = useState(false)
   const [isResetting, setIsResetting] = useState(false)
 
+  const lessonStorageKey = getModuleLessonKey(moduleNumber)
+  const modulePassKey = getModulePassKey(moduleNumber)
   const finalLessonId = lessons[lessons.length - 1]?.id
   const totalLessons = lessons.length
   const activeLesson = lessons[activeIndex]
@@ -46,7 +47,7 @@ export default function ModulePage({ moduleTitle, moduleNumber, lessons, backPat
 
   useEffect(() => {
     try {
-      const raw = window.localStorage.getItem(storageKey(moduleNumber))
+      const raw = window.localStorage.getItem(lessonStorageKey)
       if (!raw) return
       const parsed = JSON.parse(raw)
       if (Array.isArray(parsed)) {
@@ -55,7 +56,7 @@ export default function ModulePage({ moduleTitle, moduleNumber, lessons, backPat
     } catch {
       setCompletedIds([])
     }
-  }, [moduleNumber])
+  }, [lessonStorageKey])
 
   useEffect(() => {
     let cancelled = false
@@ -71,7 +72,7 @@ export default function ModulePage({ moduleTitle, moduleNumber, lessons, backPat
         const passed = progress.modules.find(module => module.moduleNumber === moduleNumber)?.passed ?? false
         const localLessonIds = (() => {
           try {
-            const raw = window.localStorage.getItem(storageKey(moduleNumber))
+            const raw = window.localStorage.getItem(lessonStorageKey)
             const parsed = raw ? JSON.parse(raw) : []
             return Array.isArray(parsed) ? parsed.filter((value): value is number => typeof value === 'number') : []
           } catch {
@@ -97,7 +98,7 @@ export default function ModulePage({ moduleTitle, moduleNumber, lessons, backPat
       })
       .catch(() => {
         try {
-          setModulePassed(window.localStorage.getItem(`course:module:${moduleNumber}:passed`) === 'true')
+          setModulePassed(window.localStorage.getItem(modulePassKey) === 'true')
         } catch {
           setModulePassed(false)
         }
@@ -106,23 +107,23 @@ export default function ModulePage({ moduleTitle, moduleNumber, lessons, backPat
     return () => {
       cancelled = true
     }
-  }, [courseSlug, lessons, moduleNumber])
+  }, [courseSlug, lessonStorageKey, lessons, moduleNumber, modulePassKey])
 
   useEffect(() => {
     try {
-      window.localStorage.setItem(storageKey(moduleNumber), JSON.stringify(completedIds))
+      window.localStorage.setItem(lessonStorageKey, JSON.stringify(completedIds))
     } catch {
       // Ignore storage failures.
     }
-  }, [completedIds, moduleNumber])
+  }, [completedIds, lessonStorageKey])
 
   useEffect(() => {
     try {
-      window.localStorage.setItem(`course:module:${moduleNumber}:passed`, modulePassed ? 'true' : 'false')
+      window.localStorage.setItem(modulePassKey, modulePassed ? 'true' : 'false')
     } catch {
       // Ignore storage failures.
     }
-  }, [moduleNumber, modulePassed])
+  }, [modulePassKey, modulePassed])
 
   const visibleCompletedIds = useMemo(() => {
     if (!finalLessonId || modulePassed) return completedIds
@@ -171,16 +172,16 @@ export default function ModulePage({ moduleTitle, moduleNumber, lessons, backPat
       await resetModuleProgress(courseSlug, moduleNumber)
     } catch {
       // Ignore backend reset failures and still clear local state for development.
-    } finally {
-      setCompletedIds([])
-      setModulePassed(false)
-      setActiveIndex(0)
-      try {
-        window.localStorage.removeItem(storageKey(moduleNumber))
-        window.localStorage.removeItem(`course:module:${moduleNumber}:passed`)
-      } catch {
-        // Ignore storage failures.
-      }
+      } finally {
+        setCompletedIds([])
+        setModulePassed(false)
+        setActiveIndex(0)
+        try {
+          window.localStorage.removeItem(lessonStorageKey)
+          window.localStorage.removeItem(modulePassKey)
+        } catch {
+          // Ignore storage failures.
+        }
       setIsResetting(false)
     }
   }
