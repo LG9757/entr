@@ -1,14 +1,19 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import '../App.css'
 import { useNavigate } from 'react-router-dom'
 import AppHeader from '../components/AppHeader'
 import { enrollInCourse, getAuthToken } from '../lib/api'
-import { premiumCourse } from '../lib/premiumCourse'
+import { getStoredPremiumPurchaseOption, premiumCourse } from '../lib/premiumCourse'
 
 export default function PremiumPayment() {
   const navigate = useNavigate()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState('')
+  const [selectedOption, setSelectedOption] = useState(() => getStoredPremiumPurchaseOption())
+
+  useEffect(() => {
+    setSelectedOption(getStoredPremiumPurchaseOption())
+  }, [])
 
   const completePayment = async () => {
     if (!getAuthToken()) {
@@ -21,7 +26,7 @@ export default function PremiumPayment() {
 
     try {
       await enrollInCourse(premiumCourse.slug)
-      navigate('/home')
+      navigate(selectedOption.category === 'Purchase for your business' ? '/premium-course/business-dashboard' : '/home')
     } catch (requestError) {
       setError(requestError instanceof Error ? requestError.message : 'Payment could not be completed')
     } finally {
@@ -34,8 +39,8 @@ export default function PremiumPayment() {
       <AppHeader
         title="Complete Your Enrollment"
         subtitle={premiumCourse.title}
-        backLabel="Back to Home"
-        onBack={() => navigate('/home')}
+        backLabel="Back to Plans"
+        onBack={() => navigate('/premium-course/pricing')}
       />
 
       <main className="payment-layout">
@@ -43,27 +48,29 @@ export default function PremiumPayment() {
           <h2>Order Summary</h2>
           <div className="payment-course-title">{premiumCourse.title}</div>
           <p className="payment-course-copy">
-            Comprehensive course with {premiumCourse.modules} modules and {premiumCourse.lessons} lessons
+            {selectedOption.name} | {selectedOption.audience}
           </p>
 
-          <div className="payment-divider" />
-
           <div className="payment-line-item">
-            <span>Course Price</span>
-            <span>GBP {premiumCourse.price}.00</span>
+            <span>Selected Package</span>
+            <span>{selectedOption.name}</span>
           </div>
           <div className="payment-line-item">
-            <span>Tax</span>
-            <span>GBP 0.00</span>
+            <span>Package Price</span>
+            <span>GBP {selectedOption.price.toLocaleString()}.00</span>
+          </div>
+          <div className="payment-line-item">
+            <span>Access Type</span>
+            <span>{selectedOption.priceLabel}</span>
           </div>
           <div className="payment-line-item payment-line-total">
             <span>Total</span>
-            <span>GBP {premiumCourse.price}.00</span>
+            <span>GBP {selectedOption.price.toLocaleString()}.00</span>
           </div>
 
           <div className="payment-includes-box">
-            <div className="payment-includes-title">What&apos;s Included:</div>
-            {premiumCourse.includes.map(item => (
+            <div className="payment-includes-title">What&apos;s Included</div>
+            {selectedOption.benefits.map(item => (
               <div key={item} className="payment-include-item">
                 {item}
               </div>
@@ -73,7 +80,9 @@ export default function PremiumPayment() {
 
         <section className="payment-card payment-form-card">
           <h2>Payment Information</h2>
-          <p className="payment-course-copy">Enter your card details to complete enrollment</p>
+          <p className="payment-course-copy">
+            Enter your card details to complete your {selectedOption.name.toLowerCase()} purchase.
+          </p>
 
           <label className="payment-label">
             Cardholder Name
@@ -101,7 +110,7 @@ export default function PremiumPayment() {
           </div>
 
           <button className="payment-submit-btn" onClick={completePayment}>
-            {isSubmitting ? 'Processing...' : `Complete Payment - GBP ${premiumCourse.price}.00`}
+            {isSubmitting ? 'Processing...' : `Complete Payment - GBP ${selectedOption.price.toLocaleString()}.00`}
           </button>
 
           {error && <p className="error-message">{error}</p>}

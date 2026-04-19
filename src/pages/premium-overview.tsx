@@ -3,12 +3,16 @@ import '../App.css'
 import { useNavigate } from 'react-router-dom'
 import AppHeader from '../components/AppHeader'
 import { getAuthToken, getCourseAccess, unenrollFromCourse } from '../lib/api'
-import { premiumCourse } from '../lib/premiumCourse'
+import { getStoredPremiumPurchaseOption, premiumCourse } from '../lib/premiumCourse'
 
 export default function PremiumOverview() {
   const navigate = useNavigate()
   const [enrolled, setEnrolled] = useState(false)
   const [isResetting, setIsResetting] = useState(false)
+  const selectedOption = getStoredPremiumPurchaseOption()
+  const isBusinessPlan = selectedOption.category === 'Purchase for your business'
+  const primaryPath = enrolled ? (isBusinessPlan ? '/premium-course/business-dashboard' : '/home') : '/premium-course/pricing'
+  const primaryLabel = enrolled ? (isBusinessPlan ? 'Open Team Dashboard' : 'Go to Dashboard') : 'Enroll Now'
 
   useEffect(() => {
     if (!getAuthToken()) {
@@ -46,11 +50,8 @@ export default function PremiumOverview() {
           <p className="premium-subtitle">{premiumCourse.subtitle}</p>
 
           <div className="premium-cta-row">
-            <button
-              className="premium-primary-btn"
-              onClick={() => navigate(enrolled ? '/home' : '/premium-course/payment')}
-            >
-              {enrolled ? 'Go to Dashboard' : 'Enroll Now'}
+            <button className="premium-primary-btn" onClick={() => navigate(primaryPath)}>
+              {primaryLabel}
             </button>
             <button className="premium-secondary-btn" onClick={() => navigate('/premium-course/curriculum')}>
               View Curriculum

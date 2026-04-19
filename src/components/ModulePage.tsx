@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import '../App.css'
 import AppHeader from './AppHeader'
@@ -33,6 +33,7 @@ const lessonTypeLabel: Record<LessonType, string> = {
 
 export default function ModulePage({ moduleTitle, moduleNumber, lessons, backPath, courseSlug }: ModulePageProps) {
   const navigate = useNavigate()
+  const lessonContentRef = useRef<HTMLElement | null>(null)
   const [activeIndex, setActiveIndex] = useState(0)
   const [completedIds, setCompletedIds] = useState<number[]>([])
   const [modulePassed, setModulePassed] = useState(false)
@@ -145,7 +146,7 @@ export default function ModulePage({ moduleTitle, moduleNumber, lessons, backPat
     if (index < 0 || index >= lessons.length) return
     if (!isAccessible(index)) return
     setActiveIndex(index)
-    window.scrollTo({ top: 0, behavior: 'smooth' })
+    lessonContentRef.current?.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   const syncCompletedLesson = (lessonId: number) => {
@@ -268,7 +269,7 @@ export default function ModulePage({ moduleTitle, moduleNumber, lessons, backPat
           </ul>
         </aside>
 
-        <section className="lesson-content">
+        <section className="lesson-content" ref={lessonContentRef}>
           <div className="lesson-content-shell">
             <div className="lesson-content-hero">
               <div>
