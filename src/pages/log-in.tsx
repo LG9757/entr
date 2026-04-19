@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import '../App.css'
 import { useNavigate } from 'react-router-dom'
-import { loginUser, registerUser, setAuthSession } from '../lib/api'
+import { loginUser, registerUser, setAuthSession, startDevBypassSession } from '../lib/api'
 
 export default function Login() {
   const navigate = useNavigate()
@@ -187,6 +187,19 @@ export default function Login() {
           <button type="submit" disabled={isSubmitting}>
             {isSubmitting ? 'Please wait...' : activeTab === 'login' ? 'Login' : 'Create account'}
           </button>
+
+          {import.meta.env.DEV && (
+            <button
+              type="button"
+              className="dev-bypass-button"
+              onClick={() => {
+                startDevBypassSession()
+                navigate('/home')
+              }}
+            >
+              Continue in dev mode
+            </button>
+          )}
         </form>
 
         <p className="forgot-password">Use sign up to create your first account on the new backend.</p>

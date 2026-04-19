@@ -21,6 +21,96 @@ export const premiumCourse = {
   ],
 }
 
+export const premiumPurchaseOptions = [
+  {
+    id: 'personal',
+    category: 'Purchase for yourself',
+    name: 'Standard Access',
+    price: 65,
+    priceLabel: 'One-time payment',
+    audience: 'Individual learner',
+    summary: 'Full personal access to the complete course for one learner.',
+    benefits: [
+      'Lifetime access to the full course',
+      'All 8 modules, 69 lessons, and downloadable resources',
+      'Ideal for individual upskilling and self-paced learning',
+    ],
+  },
+  {
+    id: 'bronze',
+    category: 'Purchase for your business',
+    name: 'Bronze',
+    price: 895,
+    priceLabel: 'One-time team licence',
+    audience: 'Up to 20 employees',
+    summary: 'A practical team package for smaller businesses that want a fast, effective skills uplift.',
+    benefits: [
+      'Full course designed to help your employees upskill, improving their efficiency and knowledge',
+      'Course access for up to 20 employees',
+    ],
+  },
+  {
+    id: 'silver',
+    category: 'Purchase for your business',
+    name: 'Silver',
+    price: 4950,
+    priceLabel: 'One-time team licence',
+    audience: 'Up to 200 employees',
+    summary: 'A broader rollout for growing teams that want support alongside the training itself.',
+    benefits: [
+      'Full course designed to help your employees upskill, improving their efficiency and knowledge',
+      'Course access for up to 200 employees',
+      'Full support from our team',
+      'Possibility to make minor amendments to the course to suit your needs',
+    ],
+  },
+  {
+    id: 'gold',
+    category: 'Purchase for your business',
+    name: 'Gold',
+    price: 14500,
+    priceLabel: 'One-time enterprise package',
+    audience: 'Up to 1,000 employees',
+    summary: 'A premium option for larger organisations that need a more tailored training rollout.',
+    benefits: [
+      'Full course designed to help your employees upskill, improving their efficiency and knowledge',
+      'Course access for up to 1,000 employees',
+      'Full support from our team',
+      'Possibility to make minor amendments to the course to suit your needs',
+      'A fully tailored course shaped around your needs and requirements',
+    ],
+  },
+] as const
+
+export type PremiumPurchaseOption = (typeof premiumPurchaseOptions)[number]
+
+const selectedPurchaseOptionKey = 'premium-course:selected-option'
+
+export function getPremiumPurchaseOption(optionId: string | null | undefined) {
+  return premiumPurchaseOptions.find(option => option.id === optionId) ?? premiumPurchaseOptions[0]
+}
+
+export function getStoredPremiumPurchaseOption() {
+  if (typeof window === 'undefined') return premiumPurchaseOptions[0]
+
+  try {
+    const optionId = window.localStorage.getItem(selectedPurchaseOptionKey)
+    return getPremiumPurchaseOption(optionId)
+  } catch {
+    return premiumPurchaseOptions[0]
+  }
+}
+
+export function setStoredPremiumPurchaseOption(optionId: PremiumPurchaseOption['id']) {
+  if (typeof window === 'undefined') return
+
+  try {
+    window.localStorage.setItem(selectedPurchaseOptionKey, optionId)
+  } catch {
+    // Ignore storage failures.
+  }
+}
+
 export const premiumCurriculum = [
   {
     number: 1,
