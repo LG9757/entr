@@ -13,6 +13,41 @@ import {
   moduleSummaries,
 } from '../lib/courseProgress'
 
+function ProgressRing({
+  value,
+  label,
+  accentClass,
+}: {
+  value: number
+  label: string
+  accentClass: string
+}) {
+  const [isReady, setIsReady] = useState(false)
+
+  useEffect(() => {
+    setIsReady(false)
+    const animationFrame = window.requestAnimationFrame(() => {
+      setIsReady(true)
+    })
+
+    return () => {
+      window.cancelAnimationFrame(animationFrame)
+    }
+  }, [value])
+
+  return (
+    <div
+      className={['progress-ring', accentClass, isReady ? 'is-ready' : ''].join(' ')}
+      style={{ ['--ring-progress' as string]: String(isReady ? value : 0) }}
+    >
+      <div className="progress-ring-inner">
+        <div className="progress-ring-value">{value}%</div>
+        <div className="progress-ring-label">{label}</div>
+      </div>
+    </div>
+  )
+}
+
 type ModuleViewState = {
   number: number
   title: string
@@ -103,6 +138,8 @@ export default function Course() {
   const completionPercent = totalLessons === 0 ? 0 : Math.round((completedLessons / totalLessons) * 100)
   const availableModules = modules.filter(module => module.unlocked)
   const lockedModules = modules.filter(module => !module.unlocked)
+  const unlockedPercent = Math.round((unlockedModules / moduleSummaries.length) * 100)
+  const lockedPercent = Math.round((lockedModules.length / moduleSummaries.length) * 100)
 
   return (
     <div className="course-page-root">
@@ -145,26 +182,78 @@ export default function Course() {
 
           <section className="course-hero-stats course-hero-stats-clean">
             <div className="stat-card stat-card-emphasis">
-              <h3>Course Progress</h3>
-              <p className="stat-number">{completionPercent}%</p>
-              <p className="stat-sub">
-                {completedLessons} of {totalLessons} lessons complete
-              </p>
+              <div className="stat-card-topline">
+                <h3>Course Progress</h3>
+                <span className="stat-card-chip">{completedModules}/{moduleSummaries.length} passed</span>
+              </div>
+              <div className="stat-visual-layout">
+                <ProgressRing value={completionPercent} label="Complete" accentClass="accent-progress" />
+                <div className="stat-visual-copy">
+                  <p className="stat-number">{completedLessons} lessons done</p>
+                  <p className="stat-sub">
+                    You&apos;ve completed {completedLessons} of {totalLessons} lessons across the full roadmap.
+                  </p>
+                </div>
+              </div>
               <div className="overall-bar">
                 <div className="overall-bar-fill" style={{ width: `${completionPercent}%` }} />
+              </div>
+              <div className="stat-module-strip" aria-hidden="true">
+                {modules.map(module => (
+                  <span
+                    key={module.number}
+                    className={[
+                      'stat-module-dot',
+                      module.completed ? 'completed' : module.unlocked ? 'unlocked' : 'locked',
+                    ].join(' ')}
+                  />
+                ))}
               </div>
             </div>
 
             <div className="stat-card">
-              <h3>Available Now</h3>
-              <p className="stat-number">{availableModules.length}</p>
-              <p className="stat-sub">Modules you can open today</p>
+              <div className="stat-card-topline">
+                <h3>Available Now</h3>
+                <span className="stat-card-chip">{availableModules.length} modules</span>
+              </div>
+              <div className="stat-visual-layout">
+                <ProgressRing value={unlockedPercent} label="Unlocked" accentClass="accent-unlocked" />
+                <div className="stat-visual-copy">
+                  <p className="stat-number">Ready to study</p>
+                  <p className="stat-sub">These modules are open today, with Module {nextModule.number} as your best next step.</p>
+                </div>
+              </div>
+              <div className="stat-mini-list">
+                {availableModules.slice(0, 3).map(module => (
+                  <span key={module.number} className="stat-mini-pill">
+                    M{module.number}
+                  </span>
+                ))}
+              </div>
             </div>
 
             <div className="stat-card">
-              <h3>Locked Ahead</h3>
-              <p className="stat-number">{lockedModules.length}</p>
-              <p className="stat-sub">More modules unlock as you finish each stage</p>
+              <div className="stat-card-topline">
+                <h3>Locked Ahead</h3>
+                <span className="stat-card-chip">{lockedModules.length} remaining</span>
+              </div>
+              <div className="stat-visual-layout">
+                <ProgressRing value={lockedPercent} label="Pending" accentClass="accent-locked" />
+                <div className="stat-visual-copy">
+                  <p className="stat-number">Roadmap ahead</p>
+                  <p className="stat-sub">
+                    Finish the current assessment path to unlock {lockedModules.length > 0 ? `Module ${lockedModules[0].number}` : 'the final stage'} next.
+                  </p>
+                </div>
+              </div>
+              <div className="stat-roadmap-list">
+                {lockedModules.slice(0, 3).map(module => (
+                  <div key={module.number} className="stat-roadmap-item">
+                    <span className="stat-roadmap-marker" />
+                    <span>Module {module.number}</span>
+                  </div>
+                ))}
+              </div>
             </div>
           </section>
         </div>

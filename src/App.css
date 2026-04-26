@@ -35,6 +35,12 @@ body {
   --theme-shadow: 0 22px 50px rgba(15, 23, 42, 0.22);
 }
 
+@property --ring-progress {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 0;
+}
+
 /* A11y focus */
 :focus-visible {
   outline: 2px solid rgba(79, 70, 229, 0.9);
@@ -65,6 +71,33 @@ body {
   flex-direction: column;
   gap: 0.55rem;
   min-width: 0;
+}
+
+.app-header-title-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.app-header-logo {
+  width: 34px;
+  height: 34px;
+  border-radius: 0.6rem;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  background: rgba(255, 255, 255, 0.14);
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.app-header-shell-home .app-header-title-row {
+  align-items: center;
+}
+
+.app-header-shell-home .app-header-logo {
+  width: 46px;
+  height: 46px;
+  border-radius: 0.8rem;
 }
 
 .app-header-copy {
@@ -121,7 +154,9 @@ body {
   align-items: center;
   justify-content: center;
   padding: 1rem;
+  position: relative;
 }
+
 
 .form-card {
   background: rgba(255, 255, 255, 0.95);
@@ -132,6 +167,23 @@ body {
   width: 100%;
   max-width: 28rem;
   border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.login-logo-wrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 0.9rem;
+}
+
+.login-logo {
+  width: 90px;
+  height: 90px;
+  object-fit: contain;
+  border-radius: 0.95rem;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  padding: 0.35rem;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.16);
 }
 
 .header { text-align: center; margin-bottom: 2rem; }
@@ -246,6 +298,118 @@ button[type="submit"]:hover {
 }
 
 /* =========================================================
+   Our Team page
+   ========================================================= */
+.team-page-root {
+  min-height: 100vh;
+  background: var(--theme-bg-soft);
+  padding: 1.5rem 2rem 2.6rem;
+}
+
+.team-layout {
+  max-width: 1300px;
+  margin: 0 auto;
+  display: grid;
+  gap: 1.4rem;
+}
+
+.team-section {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  border-radius: 1.4rem;
+  padding: 1.2rem;
+  box-shadow: 0 18px 40px rgba(2, 6, 23, 0.24);
+}
+
+.team-section-head h1,
+.team-section-head h2 {
+  color: #f8fafc;
+  font-size: 1.8rem;
+}
+
+.team-section-head p {
+  margin-top: 0.55rem;
+  color: rgba(241, 245, 249, 0.82);
+  line-height: 1.6;
+}
+
+.team-grid {
+  margin-top: 1rem;
+  display: grid;
+  gap: 0.95rem;
+}
+
+.team-grid-founders {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.team-grid-professors {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.team-card {
+  background: rgba(255, 255, 255, 0.96);
+  color: #0f172a;
+  border: 1px solid rgba(226, 232, 240, 0.86);
+  border-radius: 1.15rem;
+  padding: 1rem 0.95rem 1.05rem;
+  box-shadow: 0 16px 30px rgba(15, 23, 42, 0.16);
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.team-avatar {
+  width: 76px;
+  height: 76px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #e5e7eb, #cbd5e1);
+  border: 1px solid #cbd5e1;
+  margin-bottom: 0.15rem;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.team-avatar-head {
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  background: #94a3b8;
+  position: absolute;
+  top: 15px;
+}
+
+.team-avatar-body {
+  width: 46px;
+  height: 32px;
+  border-radius: 30px 30px 10px 10px;
+  background: #94a3b8;
+  position: absolute;
+  bottom: 8px;
+}
+
+.team-person-name {
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.team-person-role {
+  color: #6d28d9;
+  font-size: 0.86rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.team-person-bio {
+  color: #475569;
+  font-size: 0.9rem;
+  line-height: 1.58;
+}
+
+/* =========================================================
    Dashboard
    ========================================================= */
 .dashboard-root {
@@ -258,6 +422,27 @@ button[type="submit"]:hover {
 
 .logout-button { border: none; background: transparent; color: #f9fafb; font-weight: 500; cursor: pointer; }
 .logout-button:hover { text-decoration: underline; }
+
+.home-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.home-team-link {
+  border: 1px solid rgba(248, 250, 252, 0.35);
+  background: rgba(248, 250, 252, 0.12);
+  color: #f8fafc;
+  padding: 0.38rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.home-team-link:hover {
+  background: rgba(248, 250, 252, 0.22);
+}
 
 .dashboard-main { max-width: 1200px; margin: 0 auto; padding-bottom: 3rem; }
 .dashboard-section { margin-bottom: 2.5rem; }
@@ -296,6 +481,74 @@ button[type="submit"]:hover {
 
 .course-description { font-size: 0.95rem; color: #4b5563; }
 .course-meta-row { display: flex; flex-wrap: wrap; gap: 1.25rem; font-size: 0.85rem; color: #6b7280; }
+
+.course-designer-block {
+  margin-top: 0.75rem;
+}
+
+.course-designer-toggle {
+  border: 1px solid #ddd6fe;
+  background: #f5f3ff;
+  color: #5b21b6;
+  padding: 0.45rem 0.7rem;
+  border-radius: 0.7rem;
+  font-size: 0.84rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.course-designer-toggle:hover {
+  background: #ede9fe;
+}
+
+.course-designer-expand {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  margin-top: 0;
+  transition: max-height 0.25s ease, opacity 0.25s ease, margin-top 0.25s ease;
+}
+
+.course-designer-expand.open {
+  max-height: 20rem;
+  opacity: 1;
+  margin-top: 0.7rem;
+}
+
+.team-card-mini {
+  box-shadow: 0 10px 20px rgba(15, 23, 42, 0.12);
+  border-radius: 0.95rem;
+  padding: 0.8rem;
+}
+
+.team-card-mini .team-avatar {
+  width: 60px;
+  height: 60px;
+}
+
+.team-card-mini .team-avatar-head {
+  width: 17px;
+  height: 17px;
+  top: 12px;
+}
+
+.team-card-mini .team-avatar-body {
+  width: 36px;
+  height: 24px;
+  bottom: 7px;
+}
+
+.team-card-mini .team-person-name {
+  font-size: 0.92rem;
+}
+
+.team-card-mini .team-person-role {
+  font-size: 0.78rem;
+}
+
+.team-card-mini .team-person-bio {
+  font-size: 0.83rem;
+}
 
 .primary-button, .secondary-button {
   border-radius: 999px;
@@ -436,6 +689,89 @@ button[type="submit"]:hover {
 .stat-number { font-size: 1.4rem; font-weight: 600; margin-bottom: 0.3rem; color: var(--theme-text); }
 .stat-sub { font-size: 0.8rem; color: var(--theme-text-soft); }
 
+.stat-card-topline {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  align-items: center;
+  margin-bottom: 0.9rem;
+}
+
+.stat-card-chip {
+  padding: 0.22rem 0.65rem;
+  border-radius: 999px;
+  background: #f3e8ff;
+  color: #7e22ce;
+  font-size: 0.74rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.stat-visual-layout {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.stat-visual-copy {
+  flex: 1;
+  min-width: 0;
+}
+
+.progress-ring {
+  --ring-progress: 0;
+  width: 88px;
+  height: 88px;
+  border-radius: 999px;
+  background: conic-gradient(var(--ring-accent, #7c3aed) calc(var(--ring-progress) * 1%), #e5e7eb 0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+  transition: --ring-progress 1s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.progress-ring-inner {
+  width: 68px;
+  height: 68px;
+  border-radius: 999px;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset 0 0 0 1px rgba(226, 232, 240, 0.9);
+}
+
+.progress-ring-value {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #111827;
+  line-height: 1;
+}
+
+.progress-ring-label {
+  margin-top: 0.18rem;
+  font-size: 0.66rem;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.progress-ring.accent-progress {
+  --ring-accent: #7c3aed;
+}
+
+.progress-ring.accent-unlocked {
+  --ring-accent: #2563eb;
+}
+
+.progress-ring.accent-locked {
+  --ring-accent: #94a3b8;
+}
+
 .overall-bar {
   width: 100%;
   height: 8px;
@@ -445,6 +781,70 @@ button[type="submit"]:hover {
   overflow: hidden;
 }
 .overall-bar-fill { height: 100%; border-radius: 999px; background: linear-gradient(90deg, #7c3aed 0%, #2563eb 100%); }
+
+.stat-module-strip {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 0.35rem;
+  margin-top: 0.75rem;
+}
+
+.stat-module-dot {
+  height: 0.42rem;
+  border-radius: 999px;
+  background: #e5e7eb;
+}
+
+.stat-module-dot.completed {
+  background: linear-gradient(90deg, #7c3aed, #9333ea);
+}
+
+.stat-module-dot.unlocked {
+  background: #93c5fd;
+}
+
+.stat-module-dot.locked {
+  background: #d1d5db;
+}
+
+.stat-mini-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-top: 0.85rem;
+}
+
+.stat-mini-pill {
+  padding: 0.24rem 0.55rem;
+  border-radius: 999px;
+  background: #eff6ff;
+  color: #1d4ed8;
+  font-size: 0.74rem;
+  font-weight: 700;
+}
+
+.stat-roadmap-list {
+  margin-top: 0.85rem;
+  display: grid;
+  gap: 0.38rem;
+}
+
+.stat-roadmap-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #64748b;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.stat-roadmap-marker {
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 999px;
+  background: #cbd5e1;
+  box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.4);
+}
 
 /* Scrollable modules list tile */
 .course-modules-wrapper {
@@ -1117,9 +1517,16 @@ button[type="submit"]:hover {
   .course-hero-main { grid-template-columns: 1fr; }
   .course-hero-stats { grid-template-columns: 1fr; }
   .course-hero-clean-grid { grid-template-columns: 1fr; }
+  .stat-visual-layout {
+    align-items: flex-start;
+  }
   .app-header-bar {
     flex-direction: column;
     align-items: flex-start;
+  }
+  .app-header-logo {
+    width: 30px;
+    height: 30px;
   }
   .course-section-head {
     flex-direction: column;
@@ -1135,6 +1542,13 @@ button[type="submit"]:hover {
   .course-icon { width: 100px; height: 100px; }
   .course-page-root { padding: 1rem; }
   .course-hero-main-title { max-width: none; }
+  .stat-visual-layout {
+    flex-direction: column;
+  }
+  .stat-card-topline {
+    flex-direction: column;
+    align-items: flex-start;
+  }
   .module-card-top {
     flex-direction: column;
     align-items: flex-start;
@@ -2287,6 +2701,14 @@ button[type="submit"]:hover {
     grid-template-columns: 1fr;
   }
 
+  .team-grid-founders {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .team-grid-professors {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .business-kpi-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -2330,4 +2752,14 @@ button[type="submit"]:hover {
   .curriculum-card-badges {
     flex-wrap: wrap;
   }
+
+  .team-page-root {
+    padding: 1rem;
+  }
+
+  .team-grid-founders,
+  .team-grid-professors {
+    grid-template-columns: 1fr;
+  }
+
 }

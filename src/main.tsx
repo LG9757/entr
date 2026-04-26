@@ -11,6 +11,7 @@ import Module3 from './pages/module3'
 import Module4 from './pages/module4'
 import Module5 from './pages/module5'
 import Module6 from './pages/module6'
+import OurTeamPage from './pages/our-team'
 import PremiumCurriculum from './pages/premium-curriculum'
 import PremiumBusinessDashboard from './pages/premium-business-dashboard'
 import PremiumOverview from './pages/premium-overview'
@@ -22,6 +23,7 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
     <HashRouter>
       <Routes>
         <Route path="/" element={<App />} />
+        <Route path="/our-team" element={<OurTeamPage />} />
         <Route path="/home" element={<App page="home" />} />
         <Route path="/course" element={<Course />} />
         <Route path="/premium-course" element={<PremiumOverview />} />
