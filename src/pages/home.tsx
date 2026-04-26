@@ -8,6 +8,7 @@ import { premiumCourse } from '../lib/premiumCourse'
 export default function Home() {
   const navigate = useNavigate()
   const [premiumEnrolled, setPremiumEnrolled] = useState(false)
+  const [designerExpanded, setDesignerExpanded] = useState(false)
   const user = getStoredUser()
 
   useEffect(() => {
@@ -38,18 +39,24 @@ export default function Home() {
   return (
     <div className="dashboard-root">
       <AppHeader
+        className="app-header-shell-home"
         title="My Learning Dashboard"
         subtitle={user ? `Signed in as ${user.name}. Your enrolled courses, premium options, and latest progress live here.` : 'Your enrolled courses, premium options, and latest progress in one place.'}
         rightSlot={
-          <button
-            className="logout-button"
-            onClick={() => {
-              clearAuthSession()
-              navigate('/')
-            }}
-          >
-            Logout
-          </button>
+          <div className="home-header-actions">
+            <button className="home-team-link" onClick={() => navigate('/our-team')}>
+              Our Team
+            </button>
+            <button
+              className="logout-button"
+              onClick={() => {
+                clearAuthSession()
+                navigate('/')
+              }}
+            >
+              Logout
+            </button>
+          </div>
         }
       />
 
@@ -149,6 +156,32 @@ export default function Home() {
                 <span>980 learners</span>
                 <span>12+ hours</span>
                 <span>69 lessons</span>
+              </div>
+
+              <div className="course-designer-block">
+                <button
+                  type="button"
+                  className="course-designer-toggle"
+                  onClick={() => setDesignerExpanded(value => !value)}
+                  aria-expanded={designerExpanded}
+                >
+                  Designed by: Sophie Patel (Lloyds Banking Group)
+                </button>
+
+                <div className={['course-designer-expand', designerExpanded ? 'open' : ''].join(' ')}>
+                  <article className="team-card team-card-mini">
+                    <div className="team-avatar" aria-hidden="true">
+                      <div className="team-avatar-head" />
+                      <div className="team-avatar-body" />
+                    </div>
+                    <div className="team-person-name">Sophie Patel</div>
+                    <div className="team-person-role">Learning & Capability Manager, Lloyds Banking Group</div>
+                    <p className="team-person-bio">
+                      Works with enterprise learning teams to improve digital skills adoption, contributing practical
+                      insight into workforce upskilling and measurable training impact.
+                    </p>
+                  </article>
+                </div>
               </div>
 
               <div className="course-actions">

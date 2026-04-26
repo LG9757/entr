@@ -2,6 +2,7 @@ import { useState } from 'react'
 import '../App.css'
 import { useNavigate } from 'react-router-dom'
 import { loginUser, registerUser, setAuthSession, startDevBypassSession } from '../lib/api'
+import oneGuardLogo from '../assets/oneguard.png'
 
 export default function Login() {
   const navigate = useNavigate()
@@ -80,6 +81,10 @@ export default function Login() {
   return (
     <div className="app-container">
       <div className="form-card">
+        <div className="login-logo-wrap">
+          <img src={oneGuardLogo} alt="One guard logo" className="login-logo" />
+        </div>
+
         <div className="header">
           <h1>Welcome back</h1>
           <p>Continue your learning journey</p>
