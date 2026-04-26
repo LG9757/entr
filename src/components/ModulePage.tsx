@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import '../App.css'
 import AppHeader from './AppHeader'
-import { completeLesson, getCourseProgress, resetModuleProgress } from '../lib/api'
+import { canSeeDevControls, completeLesson, getCourseProgress, resetModuleProgress } from '../lib/api'
 import { getModuleLessonKey, getModulePassKey } from '../lib/courseProgress'
 
 export type LessonStatus = 'completed' | 'current' | 'locked'
@@ -38,6 +38,7 @@ export default function ModulePage({ moduleTitle, moduleNumber, lessons, backPat
   const [completedIds, setCompletedIds] = useState<number[]>([])
   const [modulePassed, setModulePassed] = useState(false)
   const [isResetting, setIsResetting] = useState(false)
+  const showDevControls = canSeeDevControls()
 
   const lessonStorageKey = getModuleLessonKey(moduleNumber)
   const modulePassKey = getModulePassKey(moduleNumber)
@@ -223,9 +224,11 @@ export default function ModulePage({ moduleTitle, moduleNumber, lessons, backPat
               </div>
             </div>
 
-            <button type="button" className="dev-reset-button" onClick={handleResetProgress} disabled={isResetting}>
-              {isResetting ? 'Resetting progress...' : 'Dev: Reset module progress'}
-            </button>
+            {showDevControls && (
+              <button type="button" className="dev-reset-button" onClick={handleResetProgress} disabled={isResetting}>
+                {isResetting ? 'Resetting progress...' : 'Dev: Reset module progress'}
+              </button>
+            )}
           </div>
 
           <h2 className="sidebar-title">Lessons</h2>

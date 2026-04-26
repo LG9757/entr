@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import '../App.css'
 import { useNavigate } from 'react-router-dom'
 import AppHeader from '../components/AppHeader'
-import { getAuthToken, getCourseAccess, unenrollFromCourse } from '../lib/api'
+import { canSeeDevControls, getAuthToken, getCourseAccess, unenrollFromCourse } from '../lib/api'
 import { getStoredPremiumPurchaseOption, premiumCourse } from '../lib/premiumCourse'
 
 export default function PremiumOverview() {
@@ -10,6 +10,7 @@ export default function PremiumOverview() {
   const [enrolled, setEnrolled] = useState(false)
   const [isResetting, setIsResetting] = useState(false)
   const selectedOption = getStoredPremiumPurchaseOption()
+  const showDevControls = canSeeDevControls()
   const isBusinessPlan = selectedOption.category === 'Purchase for your business'
   const primaryPath = enrolled ? (isBusinessPlan ? '/premium-course/business-dashboard' : '/home') : '/premium-course/pricing'
   const primaryLabel = enrolled ? (isBusinessPlan ? 'Open Team Dashboard' : 'Go to Dashboard') : 'Enroll Now'
@@ -56,7 +57,7 @@ export default function PremiumOverview() {
             <button className="premium-secondary-btn" onClick={() => navigate('/premium-course/curriculum')}>
               View Curriculum
             </button>
-            {enrolled && (
+            {enrolled && showDevControls && (
               <button
                 className="premium-secondary-btn premium-dev-btn"
                 onClick={async () => {

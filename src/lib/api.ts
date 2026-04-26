@@ -2,6 +2,7 @@ const apiBaseUrl = import.meta.env.VITE_API_URL ?? 'http://localhost:4010'
 const authTokenKey = 'auth:token'
 const authUserKey = 'auth:user'
 const devBypassToken = 'dev-bypass-token'
+const privilegedDevEmail = 'lewisgrice2005@icloud.com'
 const financeCourseSlug = 'recognising-ai-content-in-finance'
 const premiumCourseSlug = 'real-vs-ai'
 const financeModules = [
@@ -76,6 +77,11 @@ export function getAuthToken() {
 
 export function getStoredUser() {
   return readJson<AuthUser>(authUserKey)
+}
+
+export function canSeeDevControls() {
+  const email = getStoredUser()?.email?.trim().toLowerCase()
+  return email === privilegedDevEmail
 }
 
 function getProgressScope() {
