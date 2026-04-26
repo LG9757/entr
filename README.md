@@ -2,6 +2,8 @@
 
 `One Guard` is our group project learning platform. It is a React + Vite frontend with a small Node backend prototype for auth, course access, and progress tracking.
 
+The live link is on this link: https://lg9757.github.io/entr/#/
+
 The project currently includes:
 - a login / signup flow
 - a learner dashboard
